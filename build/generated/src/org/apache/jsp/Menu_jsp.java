@@ -111,7 +111,7 @@ public final class Menu_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("    <nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">\n");
       out.write("        <div class=\"container-fluid\">\n");
       out.write("            <!-- Título de la Aplicación -->\n");
-      out.write("            <a class=\"navbar-brand text-primary fw-bold\" href=\"Bienvenida.html\">GESTIÓN HOTEL</a>\n");
+      out.write("            <a class=\"navbar-brand text-white fw-bold\" href=\"Bienvenida.html\">GESTIÓN HOTEL</a>\n");
       out.write("            \n");
       out.write("            <!-- Botón de Menú Móvil (Toggler) -->\n");
       out.write("            <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNavDropdown\" aria-controls=\"navbarNavDropdown\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n");
@@ -135,12 +135,12 @@ public final class Menu_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                    \n");
       out.write("                    <!-- Cliente -->\n");
       out.write("                    <li class=\"nav-item\">\n");
-      out.write("                        <a class=\"nav-link\" href=\"NuevoCliente.jsp\">Cliente</a>\n");
+      out.write("                        <a class=\"nav-link text-white\" href=\"NuevoCliente.jsp\">Cliente</a>\n");
       out.write("                    </li>\n");
       out.write("\n");
       out.write("                    <!-- Dropdown Reservas -->\n");
       out.write("                    <li class=\"nav-item dropdown\">\n");
-      out.write("                        <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdownReservas\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n");
+      out.write("                        <a class=\"nav-link dropdown-toggle text-white\" href=\"#\" id=\"navbarDropdownReservas\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n");
       out.write("                            Reservas\n");
       out.write("                        </a>\n");
       out.write("                        <ul class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownReservas\">\n");
@@ -151,7 +151,7 @@ public final class Menu_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                    \n");
       out.write("                    <!-- Dropdown Check-in/out -->\n");
       out.write("                    <li class=\"nav-item dropdown\">\n");
-      out.write("                        <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdownCheckin\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n");
+      out.write("                        <a class=\"nav-link dropdown-toggle text-white\" href=\"#\" id=\"navbarDropdownCheckin\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n");
       out.write("                            Check-in/out\n");
       out.write("                        </a>\n");
       out.write("                        <ul class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownCheckin\">\n");
@@ -162,12 +162,12 @@ public final class Menu_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("                    <!-- Habitación -->\n");
       out.write("                    <li class=\"nav-item\">\n");
-      out.write("                        <a class=\"nav-link\" href=\"NuevaHabitacion.jsp\">Habitación</a>\n");
+      out.write("                        <a class=\"nav-link text-white\" href=\"NuevaHabitacion.jsp\">Habitación</a>\n");
       out.write("                    </li>\n");
       out.write("                    \n");
       out.write("                    <!-- Dropdown Productos (Registro, Ventas y Consultas) -->\n");
       out.write("                    <li class=\"nav-item dropdown\">\n");
-      out.write("                        <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdownProductos\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n");
+      out.write("                        <a class=\"nav-link dropdown-toggle text-white\" href=\"#\" id=\"navbarDropdownProductos\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n");
       out.write("                            Productos\n");
       out.write("                        </a>\n");
       out.write("                        <ul class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownProductos\">\n");
@@ -181,7 +181,7 @@ public final class Menu_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                    <!-- Fin Dropdown Productos -->\n");
       out.write("\n");
       out.write("                    <li class=\"nav-item\">\n");
-      out.write("                        <a class=\"nav-link\" href=\"#\">Reportes</a>\n");
+      out.write("                        <a class=\"nav-link text-danger\" href=\"#\">Reportes</a>\n");
       out.write("                    </li>\n");
       out.write("                </ul>\n");
       out.write("            </div>\n");

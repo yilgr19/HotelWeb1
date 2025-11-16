@@ -68,7 +68,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <!-- Título de la Aplicación -->
-            <a class="navbar-brand text-primary fw-bold" href="Bienvenida.html">GESTIÓN HOTEL</a>
+            <a class="navbar-brand text-white fw-bold" href="Bienvenida.html">GESTIÓN HOTEL</a>
             
             <!-- Botón de Menú Móvil (Toggler) -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,12 +92,12 @@
                     
                     <!-- Cliente -->
                     <li class="nav-item">
-                        <a class="nav-link" href="NuevoCliente.jsp">Cliente</a>
+                        <a class="nav-link text-white" href="NuevoCliente.jsp">Cliente</a>
                     </li>
 
                     <!-- Dropdown Reservas -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReservas" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownReservas" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Reservas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownReservas">
@@ -108,7 +108,7 @@
                     
                     <!-- Dropdown Check-in/out -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCheckin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownCheckin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Check-in/out
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownCheckin">
@@ -119,12 +119,12 @@
 
                     <!-- Habitación -->
                     <li class="nav-item">
-                        <a class="nav-link" href="NuevaHabitacion.jsp">Habitación</a>
+                        <a class="nav-link text-white" href="NuevaHabitacion.jsp">Habitación</a>
                     </li>
                     
                     <!-- Dropdown Productos (Registro, Ventas y Consultas) -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProductos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownProductos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Productos
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownProductos">
@@ -138,7 +138,7 @@
                     <!-- Fin Dropdown Productos -->
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Reportes</a>
+                        <a class="nav-link text-danger" href="#">Reportes</a>
                     </li>
                 </ul>
             </div>

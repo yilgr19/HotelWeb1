@@ -84,9 +84,9 @@
                             Archivo
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownArchivo">
-                            <li><a class="dropdown-item" href="index.jsp">Dashboard Principal</a></li>
+                            <li><a class="dropdown-item text-danger" href="index.jsp">Cerrar Sesión</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="Logout.jsp">Cerrar Sesión</a></li>
+                            
                         </ul>
                     </li>
                     

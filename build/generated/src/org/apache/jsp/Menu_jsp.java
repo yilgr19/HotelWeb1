@@ -55,6 +55,16 @@ public final class Menu_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            background-color: #343a40; /* Gris oscuro de fondo */\n");
       out.write("            color: #f8f9fa; /* Color de texto blanco/claro */\n");
       out.write("        }\n");
+      out.write("        \n");
+      out.write("        /* Estilo para hacer la Navbar más grande */\n");
+      out.write(".navbar-nav .nav-link,\n");
+      out.write(".navbar-brand {\n");
+      out.write("    /* Aumenta el padding vertical de los enlaces. Por defecto es ~0.5rem (8px). \n");
+      out.write("       Aumentaremos a 1rem (16px) o 1.25rem (20px) para que sea notablemente más alto. */\n");
+      out.write("    padding-top: 1.00rem !important;\n");
+      out.write("    padding-bottom: 1.50rem !important;\n");
+      out.write("    /* !important asegura que sobrescriba el estilo de Bootstrap */\n");
+      out.write("}\n");
       out.write("\n");
       out.write("        /* Estilos de Navbar y Dropdown para modo oscuro */\n");
       out.write("        .navbar {\n");

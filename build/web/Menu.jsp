@@ -12,6 +12,16 @@
             background-color: #343a40; /* Gris oscuro de fondo */
             color: #f8f9fa; /* Color de texto blanco/claro */
         }
+        
+        /* Estilo para hacer la Navbar más grande */
+.navbar-nav .nav-link,
+.navbar-brand {
+    /* Aumenta el padding vertical de los enlaces. Por defecto es ~0.5rem (8px). 
+       Aumentaremos a 1rem (16px) o 1.25rem (20px) para que sea notablemente más alto. */
+    padding-top: 1.00rem !important;
+    padding-bottom: 1.50rem !important;
+    /* !important asegura que sobrescriba el estilo de Bootstrap */
+}
 
         /* Estilos de Navbar y Dropdown para modo oscuro */
         .navbar {

@@ -129,7 +129,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownProductos">
                             <!-- Nueva opción agregada -->
-                            <li><a class="dropdown-item" href="RegistrarProducto.jsp">Registrar Producto</a></li>
+                            <li><a class="dropdown-item" href="RegistrarProductos.jsp">Registrar Producto</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="NuevaVenta.jsp">Ventas</a></li>
                             <li><a class="dropdown-item" href="ConsultarVentas.jsp">Consultar Ventas</a></li>

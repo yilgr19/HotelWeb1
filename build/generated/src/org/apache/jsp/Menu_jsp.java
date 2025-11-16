@@ -172,7 +172,7 @@ public final class Menu_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                        </a>\n");
       out.write("                        <ul class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownProductos\">\n");
       out.write("                            <!-- Nueva opción agregada -->\n");
-      out.write("                            <li><a class=\"dropdown-item\" href=\"RegistrarProducto.jsp\">Registrar Producto</a></li>\n");
+      out.write("                            <li><a class=\"dropdown-item\" href=\"RegistrarProductos.jsp\">Registrar Producto</a></li>\n");
       out.write("                            <li><hr class=\"dropdown-divider\"></li>\n");
       out.write("                            <li><a class=\"dropdown-item\" href=\"NuevaVenta.jsp\">Ventas</a></li>\n");
       out.write("                            <li><a class=\"dropdown-item\" href=\"ConsultarVentas.jsp\">Consultar Ventas</a></li>\n");

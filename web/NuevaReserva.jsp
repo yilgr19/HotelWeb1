@@ -45,6 +45,7 @@
         /* Ajuste para que los botones de CRUD sean del mismo tamaño */
         .btn-custom-width {
             width: 100px; 
+            height: 40px;
         }
 
         /* Alineación y espaciado de los grupos de botones de la derecha */
@@ -198,6 +199,9 @@
                             <button type="submit" name="accion" value="Eliminar" class="btn btn-secondary btn-custom-width">Eliminar</button>
                             <!-- Botón Nuevo: Color Gris Secundario -->
                             <button type="button" onclick="window.location.reload();" class="btn btn-secondary btn-custom-width">Nuevo</button>
+                            
+                                  <!-- NUEVO BOTÓN DE REGRESO AL MENÚ -->
+                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary btn-custom-width">Regresar</button>
                         </div>
                         
                     </div>

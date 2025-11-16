@@ -225,6 +225,9 @@
                             <!-- Botón 6: Regresar (Secundario, Gris) -->
                             <button type="button" onclick="window.history.back();" class="btn btn-secundario btn-custom-width">Regresar</button>
                             
+                                  <!-- NUEVO BOTÓN DE REGRESO AL MENÚ -->
+                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary btn-custom-width">Regresar</button>
+                            
                         </div>
                     </div>
                 </div>

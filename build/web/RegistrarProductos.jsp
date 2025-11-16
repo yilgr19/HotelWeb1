@@ -18,6 +18,7 @@
         .navbar {
             box-shadow: 0 2px 5px rgba(0,0,0,.5);
         }
+         
         .dropdown-menu {
             background-color: #343a40; 
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -45,7 +46,7 @@
 
         /* Contenedor principal del formulario */
         .form-container {
-            background-color: #2b3035; /* Un gris más oscuro para el fondo del formulario */
+            background-color: #212529; /* Un gris más oscuro para el fondo del formulario */
             padding: 30px;
             border-radius: 0 0 8px 8px; /* Bordes inferiores redondeados */
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);

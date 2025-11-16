@@ -61,6 +61,7 @@ public final class RegistrarProductos_jsp extends org.apache.jasper.runtime.Http
       out.write("        .navbar {\n");
       out.write("            box-shadow: 0 2px 5px rgba(0,0,0,.5);\n");
       out.write("        }\n");
+      out.write("         \n");
       out.write("        .dropdown-menu {\n");
       out.write("            background-color: #343a40; \n");
       out.write("            border: 1px solid rgba(255, 255, 255, 0.1);\n");
@@ -88,7 +89,7 @@ public final class RegistrarProductos_jsp extends org.apache.jasper.runtime.Http
       out.write("\n");
       out.write("        /* Contenedor principal del formulario */\n");
       out.write("        .form-container {\n");
-      out.write("            background-color: #2b3035; /* Un gris más oscuro para el fondo del formulario */\n");
+      out.write("            background-color: #212529; /* Un gris más oscuro para el fondo del formulario */\n");
       out.write("            padding: 30px;\n");
       out.write("            border-radius: 0 0 8px 8px; /* Bordes inferiores redondeados */\n");
       out.write("            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);\n");
@@ -303,7 +304,7 @@ public final class RegistrarProductos_jsp extends org.apache.jasper.runtime.Http
       out.write("                                <div class=\"d-grid gap-2\">\n");
       out.write("                                    <button type=\"submit\" class=\"btn btn-primary btn-custom\">Registrar Producto</button>\n");
       out.write("                                    <button type=\"button\" class=\"btn btn-info btn-custom\">Limpiar Formulario</button>\n");
-      out.write("                                    <button type=\"button\" class=\"btn btn-secondary btn-custom\" onclick=\"window.location.href='index.jsp'\">Cancelar</button>\n");
+      out.write("                                    <button type=\"button\" class=\"btn btn-secondary btn-custom\" onclick=\"window.location.href='Menu.jsp'\">Cancelar</button>\n");
       out.write("                                </div>\n");
       out.write("                            </div>\n");
       out.write("                        </div>\n");

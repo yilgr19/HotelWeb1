@@ -9,7 +9,7 @@
     <style>
         /* Estilos generales para el modo oscuro */
         body {
-            background-color: #212529; /* Gris oscuro de fondo */
+            background-color: #343a40; /* Gris oscuro de fondo */
             color: #f8f9fa; /* Color de texto blanco/claro */
         }
 
@@ -40,7 +40,7 @@
             display: flex;
             align-items: center; /* Centrar verticalmente */
             justify-content: center; /* Centrar horizontalmente */
-            background-color: #212529; 
+            background-color: #343a40; 
         }
         
         .carrusel-bordeado {
@@ -57,7 +57,7 @@
 
         .carousel-caption {
             background: rgba(0, 0, 0, 0.6); 
-            border-radius: 5px;
+            border-radius: 10px;
             padding: 10px;
         }
     </style>
@@ -153,12 +153,14 @@
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
             </div>
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <!-- Placeholder de imagen: Habitación de Lujo -->
                     <img src="https://th.bing.com/th/id/R.513342188ae2816a96d12ec15dcbeb77?rik=hCIsyf8NRGcB4A&pid=ImgRaw&r=0" class="d-block w-100" alt="Habitación 1">
                     <div class="carousel-caption d-none d-md-block">
+                        <a href="NuevaHabitacion.jsp" class="text-white text-decoration-none">
                         <h5 class="fw-bold">Habitaciones de Lujo</h5>
                         <p>Las mejores comodidades para su estancia.</p>
                     </div>
@@ -167,18 +169,28 @@
                     
                     <img src="https://ateliercdn.azureedge.net/site-atelier/atelierpm/production/images/inspiraSuites/jpg/R1900/INSPIRAJuniorSuiteSwimOutOceanViewDouble/atelier-playa-mujeres-Inspira-Junior-Suite-Swim-Out-Ocean-Double-3-2.jpg?130" class="d-block w-100" alt="Piscina">
                     <div class="carousel-caption d-none d-md-block">
+                        <a href="NuevaVenta.jsp" class="text-white text-decoration-none">
                         <h5 class="fw-bold">Servicio de Minibar y Consumos</h5>
                         <p>Disfruta tu Antojo.</p>
                     </div>
                 </div>
                 <div class="carousel-item">
              
-                    <img src="https://dexauc1l0pcnj.cloudfront.net/Content/images/blog/how-can-you-reduce-no-shows-and-cancellations-at-your-hotel.jpg" class="d-block w-100" alt="Restaurante">
+                    <img src="https://dexauc1l0pcnj.cloudfront.net/Content/images/blog/how-can-you-reduce-no-shows-and-cancellations-at-your-hotel.jpg" class="d-block w-100" alt="Minibar">
                     <div class="carousel-caption d-none d-md-block">
+                        <a href="NuevoCliente.jsp" class="text-white text-decoration-none">
                         <h5 class="fw-bold">Vive la Mejor Experiencia</h5>
                         <p>Atención Garantizada.</p>
                     </div>
                 </div>
+                 <div class="carousel-item">
+             
+                    <img src="https://images.surferseo.art/d6ad37e8-7993-4d59-943a-d96fdf06f85c.png" class="d-block w-100" alt="Reserva">
+                    <div class="carousel-caption d-none d-md-block">
+                        <a href="NuevaReserva.jsp" class="text-white text-decoration-none">
+                        <h5 class="fw-bold">Haz tu reserva</h5>
+                        <p>Atención Garantizada.</p>
+                    </div>
             </div>
             <!-- Controles Prev/Next -->
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">

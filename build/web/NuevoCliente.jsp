@@ -15,6 +15,7 @@
             justify-content: center;
             align-items: center;
         }
+        
 
         /* Estilo para el contenedor del formulario que lo hace oscuro como el Navbar */
         .form-dark-card {

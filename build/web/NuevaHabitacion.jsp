@@ -119,6 +119,9 @@
                             <button type="submit" name="accion" value="eliminar" class="btn btn-secondary btn-custom-width">Eliminar</button>
                             <button type="submit" name="accion" value="buscar" class="btn btn-secondary btn-custom-width">Buscar</button>
                             <button type="button" onclick="window.location.reload();" class="btn btn-secondary btn-custom-width">Nuevo</button>
+                            
+                                   <!-- NUEVO BOTÓN DE REGRESO AL MENÚ -->
+                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary btn-custom-width">Regresar</button>
                         </div>
                     </div>
                 </div>

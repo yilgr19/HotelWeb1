@@ -68,7 +68,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <!-- Título de la Aplicación -->
-            <a class="navbar-brand text-white fw-bold" href="Bienvenida.html">GESTIÓN HOTEL</a>
+            <a class="navbar-brand text-white fw-bold" >GESTIÓN HOTEL</a>
             
             <!-- Botón de Menú Móvil (Toggler) -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,7 +148,7 @@
     <!-- CONTENEDOR DEL CARRUSEL CENTRADO -->
     <div class="container carrusel-container">
 
-        <div id="carouselExampleIndicators" class="carousel slide w-100 rounded-3 carrusel-bordeado" data-bs-ride="carousel">
+        <div id="carouselExampleIndicators" class="carousel slide w-100 rounded-3 " data-bs-ride="carousel">
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -157,26 +157,26 @@
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <!-- Placeholder de imagen: Habitación de Lujo -->
-                    <img src="https://placehold.co/1000x500/0d6efd/ffffff?text=Habitacion+VIP" class="d-block w-100" alt="Habitación 1">
+                    <img src="https://th.bing.com/th/id/R.513342188ae2816a96d12ec15dcbeb77?rik=hCIsyf8NRGcB4A&pid=ImgRaw&r=0" class="d-block w-100" alt="Habitación 1">
                     <div class="carousel-caption d-none d-md-block">
                         <h5 class="fw-bold">Habitaciones de Lujo</h5>
                         <p>Las mejores comodidades para su estancia.</p>
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <!-- Placeholder de imagen: Piscina -->
-                    <img src="https://placehold.co/1000x500/198754/ffffff?text=Area+de+Piscina" class="d-block w-100" alt="Piscina">
+                    
+                    <img src="https://ateliercdn.azureedge.net/site-atelier/atelierpm/production/images/inspiraSuites/jpg/R1900/INSPIRAJuniorSuiteSwimOutOceanViewDouble/atelier-playa-mujeres-Inspira-Junior-Suite-Swim-Out-Ocean-Double-3-2.jpg?130" class="d-block w-100" alt="Piscina">
                     <div class="carousel-caption d-none d-md-block">
-                        <h5 class="fw-bold">Área de Piscina</h5>
-                        <p>Relájese bajo el sol.</p>
+                        <h5 class="fw-bold">Servicio de Minibar y Consumos</h5>
+                        <p>Disfruta tu Antojo.</p>
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <!-- Placeholder de imagen: Restaurante -->
-                    <img src="https://placehold.co/1000x500/ffc107/343a40?text=Restaurante+Gourmet" class="d-block w-100" alt="Restaurante">
+             
+                    <img src="https://dexauc1l0pcnj.cloudfront.net/Content/images/blog/how-can-you-reduce-no-shows-and-cancellations-at-your-hotel.jpg" class="d-block w-100" alt="Restaurante">
                     <div class="carousel-caption d-none d-md-block">
-                        <h5 class="fw-bold">Restaurante Gourmet</h5>
-                        <p>Pruebe nuestra cocina de autor.</p>
+                        <h5 class="fw-bold">Vive la Mejor Experiencia</h5>
+                        <p>Atención Garantizada.</p>
                     </div>
                 </div>
             </div>

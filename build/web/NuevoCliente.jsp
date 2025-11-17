@@ -1,33 +1,26 @@
 <%@ page import="hotelweb.models.Usuario" %>
 <%@ page import="hotelweb.dao.UsuarioManager" %>
-<%@ page import="hotelweb.models.Cliente" %> <%-- <-- 1. IMPORT AÑADIDO/CORREGIDO --%>
+<%@ page import="hotelweb.models.Cliente" %> <%-- <-- Importa el modelo Cliente --%>
 <%
-    // 1. OBTENER EL USUARIO DE LA SESIÓN
+    // --- GUARDIÁN DE SESIÓN Y ROLES ---
     Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
 
-    // 2. SI NO HAY SESIÓN, ¡AFUERA!
-    // (Redirige al login)
     if (usuarioLogueado == null) {
         response.sendRedirect("index.jsp?error=sesion_expirada");
         return;
     }
 
-    // 3. OBTENER EL NOMBRE DE ESTA PÁGINA
     String paginaActual = request.getRequestURI().substring(request.getContextPath().length() + 1);
 
-    // 4. VERIFICAR PERMISO CON EL MANAGER
     if (!UsuarioManager.tieneAccesoPagina(usuarioLogueado, paginaActual)) {
-        
-        // ¡ACCESO DENEGADO!
-        // Redirigimos al usuario a su menú (o una página de error)
-        // (Asumiendo que "Menu.jsp" es seguro para todos)
         response.sendRedirect("Menu.jsp?error=acceso_denegado");
         return;
     }
-
-    // 5. Si el código llega hasta aquí, el usuario TIENE PERMISO.
+    // --- FIN DEL GUARDIÁN ---
     
-    // --- 2. LÓGICA PARA "BUSCAR" Y RELLENAR EL FORMULARIO ---
+    
+    // --- LÓGICA PARA "BUSCAR" Y RELLENAR EL FORMULARIO ---
+    // (Este es el ÚNICO bloque que define la variable 'cliente')
     Cliente cliente = (Cliente) request.getAttribute("clienteEncontrado");
     if (cliente == null) {
         // Si no se buscó nada, creamos un cliente vacío para evitar errores
@@ -40,7 +33,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registra Nuevo Cliente (Bootstrap Dark - Columna)</title>
+    <title>Registra Nuevo Cliente</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     
@@ -86,9 +79,7 @@
         /* Ajuste para la columna de botones en pantallas grandes (Lg) */
         @media (min-width: 992px) {
             .botones-col {
-                /* Pequeño ajuste de padding para alinear con el primer campo */
                 padding-top: 1.25rem !important; 
-                /* Centrar la rejilla (d-grid) dentro de la columna */
                 justify-self: center; 
             }
         }
@@ -103,10 +94,9 @@
         </div>
         
         <div class="card-body">
-            
+
             <%-- 
-              --- 3. BLOQUE DE MENSAJES DE ÉXITO/ERROR ---
-              (Muestra lo que envía el ClienteServlet)
+              --- BLOQUE DE MENSAJES DE ÉXITO/ERROR ---
             --%>
             <% 
                 String error = (String) request.getAttribute("error");
@@ -120,6 +110,7 @@
                 }
             %>
             <%-- --- FIN DEL BLOQUE DE MENSAJES --- --%>
+
             
             <form action="ClienteServlet" method="post">
                 
@@ -127,10 +118,6 @@
                     
                     <div class="col-lg-8">
                         
-                        <!-- 
-                          --- 4. INPUTS CON ATRIBUTO 'value' ---
-                          (Para rellenar el formulario después de "Buscar")
-                        -->
                         <div class="mb-3">
                             <label for="cedula" class="form-label fw-bold">Cedula:</label>
                             <input type="text" class="form-control" id="cedula" name="cedula" 
@@ -171,13 +158,13 @@
                     
                     <div class="col-lg-4 botones-col">
                         <div class="d-grid gap-2 mx-auto"> 
-                            <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-custom-width">Guardar</button>
-                            <button type="submit" name="accion" value="eliminar" class="btn btn-secondary btn-custom-width">Eliminar</button>
-                            <button type="submit" name="accion" value="buscar" class="btn btn-secondary btn-custom-width">Buscar</button>
-                            <!-- El botón "Nuevo" ahora limpia el formulario recargando la página -->
-                            <button type="button" onclick="window.location.href='NuevoCliente.jsp';" class="btn btn-secondary btn-custom-width">Nuevo</button>
                             
-                                <!-- NUEVO BOTÓN DE REGRESO AL MENÚ -->
+                            <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-custom-width">Guardar</button>
+                            
+                            <button type="submit" name="accion" value="eliminar" class="btn btn-secondary btn-custom-width" formnovalidate>Eliminar</button>
+                            <button type="submit" name="accion" value="buscar" class="btn btn-secondary btn-custom-width" formnovalidate>Buscar</button>
+                            
+                            <button type="button" onclick="window.location.href='NuevoCliente.jsp';" class="btn btn-secondary btn-custom-width">Nuevo</button>
                             <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary btn-custom-width">Regresar</button>
                         </div>
                     </div>

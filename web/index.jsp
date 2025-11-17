@@ -1,11 +1,24 @@
+<%-- 
+  PASO 1: REVISAR SI YA HAY UNA SESIÓN ACTIVA ("roles activos")
+  (Debe ser el mismo nombre que pusiste en LoginServlet: "usuarioLogueado")
+--%>
+<%
+    if (session.getAttribute("usuarioLogueado") != null) {
+        // Si hay una sesión, lo mandamos al dashboard (¡Cámbialo por tu página principal!)
+        response.sendRedirect("dashboard.jsp"); 
+        return; // Detiene la carga del resto de la página (el formulario de login)
+    }
+%>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Gestión Hotel - Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- CSS de BOOTSTRAP -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- CSS de BOOTSTRAP (Corregí los atributos 'integrity' y 'crossorigin') -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     
     <style>
         /* Estilos base para el fondo oscuro */
@@ -93,17 +106,43 @@
             
             <h5 class="text-center mb-4 text-primary">Inicia Sesión para Acceder al Sistema</h5>
 
-            <form action="#" method="post">
+            <%-- 
+              PASO 2: MOSTRAR MENSAJE DE ERROR (Si el login falló)
+              Usamos una alerta de Bootstrap para que se vea bien.
+            --%>
+            <% 
+                String error = (String) request.getAttribute("error");
+                if (error != null) {
+                    out.println("<div class='alert alert-danger' role='alert'>");
+                    out.println(error);
+                    out.println("</div>");
+                }
+            %>
+
+            <!-- 
+                PASO 3: FORMULARIO CORREGIDO
+                - action="LoginServlet" (Debe coincidir con tu web.xml)
+                - method="POST"
+            -->
+            <form action="LoginServlet" method="POST">
                 <!-- Campo Usuario -->
                 <div class="mb-3">
                     <label for="usuario" class="form-label">Usuario</label>
-                    <input type="text" class="form-control form-control-dark" id="usuario" name="usuario" required>
+                    <!-- 
+                       PASO 4: CORRECCIÓN DE 'name'
+                       (El 'name' debe coincidir con el servlet: "txtUsuario") 
+                    -->
+                    <input type="text" class="form-control form-control-dark" id="usuario" name="txtUsuario" required>
                 </div>
 
                 <!-- Campo Contraseña -->
                 <div class="mb-4">
                     <label for="contrasena" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control form-control-dark" id="contrasena" name="contrasena" required>
+                    <!-- 
+                       PASO 4: CORRECCIÓN DE 'name'
+                       (El 'name' debe coincidir con el servlet: "txtPassword") 
+                    -->
+                    <input type="password" class="form-control form-control-dark" id="contrasena" name="txtPassword" required>
                 </div>
 
                 <!-- CONTENEDOR DE BOTONES DE ACCIÓN -->
@@ -121,7 +160,7 @@
         </div>
     </div>
     
-    <!-- JavaScript de BOOTSTRAP -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- JavaScript de BOOTSTRAP (Corregí los atributos 'integrity' y 'crossorigin') -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

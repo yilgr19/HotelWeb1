@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 // ¡¡IMPORTS IMPORTANTES DE TU LÓGICA!!
-import hotelweb.controllers.Usuario;
-import hotelweb.controllers.UsuarioManager;
 
 public class LoginServlet extends HttpServlet {
 

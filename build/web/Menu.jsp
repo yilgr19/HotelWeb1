@@ -124,7 +124,7 @@
                             Archivo
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownArchivo">
-                            <li><a class="dropdown-item text-danger" href="index.jsp">Cerrar Sesión</a></li>
+                          <li><a class="dropdown-item text-danger" href="LogoutServlet">Cerrar Sesión</a></li>
                             <li><hr class="dropdown-divider"></li>
                             
                         </ul>

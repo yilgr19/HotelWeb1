@@ -1,1 +1,0 @@
-hotelweb.controllers.UsuarioManager

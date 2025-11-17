@@ -1,2 +1,0 @@
-hotelweb.controllers.LogoutServlet
-hotelweb.controllers.LoginServlet

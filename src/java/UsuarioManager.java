@@ -72,4 +72,44 @@ public class UsuarioManager {
                 return false;
         }
     }
+    /**
+     * Revisa si un usuario tiene permiso para ver una página JSP específica.
+     * @param usuario El objeto Usuario de la sesión.
+     * @param nombrePagina El nombre del archivo .jsp (ej. "NuevoCliente.jsp")
+     * @return true si tiene permiso, false si no.
+     */
+    public static boolean tieneAccesoPagina(Usuario usuario, String nombrePagina) {
+        if (usuario == null) {
+            return false;
+        }
+
+        String rol = usuario.getRol();
+
+        // 1. El Administrador tiene acceso a TODO.
+        if (rol.equals("Administrador")) {
+            return true;
+        }
+
+        // 2. Reglas para el rol "Recepcion"
+        if (rol.equals("Recepcion")) {
+            
+            // Lista blanca de páginas permitidas para Recepción
+            // (Basado en lo que me pediste)
+            if (nombrePagina.equals("NuevoCliente.jsp")) return true;
+            if (nombrePagina.equals("NuevaReserva.jsp")) return true;
+            if (nombrePagina.equals("ConsultarReserva.jsp")) return true; // Lo añadí por lógica
+            if (nombrePagina.equals("NuevoCheckin.jsp")) return true;   // Lo añadí por lógica
+            if (nombrePagina.equals("ConsultarCheckin.jsp")) return true; // Lo añadí por lógica
+            if (nombrePagina.equals("NuevaVenta.jsp")) return true;
+            
+            // Asegúrate de que también puedan ver el menú principal
+            if (nombrePagina.equals("Menu.jsp")) return true; // ¡¡Cambia "Menu.jsp" por tu página de menú!!
+
+            // Si la página no está en la lista, se deniega el acceso.
+            return false;
+        }
+
+        // Otros roles (si los hubiera) no tienen acceso a nada por defecto
+        return false;
+    }
 }

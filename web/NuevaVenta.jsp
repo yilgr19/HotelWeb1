@@ -1,3 +1,33 @@
+<%@ page import="hotelweb.controllers.Usuario" %>
+<%@ page import="hotelweb.controllers.UsuarioManager" %>
+<%
+    // 1. OBTENER EL USUARIO DE LA SESIÓN
+    Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+
+    // 2. SI NO HAY SESIÓN, ¡AFUERA!
+    // (Redirige al login)
+    if (usuarioLogueado == null) {
+        response.sendRedirect("index.jsp?error=sesion_expirada");
+        return;
+    }
+
+    // 3. OBTENER EL NOMBRE DE ESTA PÁGINA
+    String paginaActual = request.getRequestURI().substring(request.getContextPath().length() + 1);
+
+    // 4. VERIFICAR PERMISO CON EL MANAGER
+    if (!UsuarioManager.tieneAccesoPagina(usuarioLogueado, paginaActual)) {
+        
+        // ¡ACCESO DENEGADO!
+        // Redirigimos al usuario a su menú (o una página de error)
+        // (Asumiendo que "Menu.jsp" es seguro para todos)
+        response.sendRedirect("Menu.jsp?error=acceso_denegado");
+        return;
+    }
+
+    // Si el código llega hasta aquí, el usuario TIENE PERMISO.
+    // La página .jsp se cargará normalmente.
+%>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>

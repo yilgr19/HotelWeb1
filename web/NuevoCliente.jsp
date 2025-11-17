@@ -1,6 +1,6 @@
-
 <%@ page import="hotelweb.models.Usuario" %>
 <%@ page import="hotelweb.dao.UsuarioManager" %>
+<%@ page import="hotelweb.models.Cliente" %> <%-- <-- 1. IMPORT AÑADIDO/CORREGIDO --%>
 <%
     // 1. OBTENER EL USUARIO DE LA SESIÓN
     Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
@@ -25,8 +25,15 @@
         return;
     }
 
-    // Si el código llega hasta aquí, el usuario TIENE PERMISO.
-    // La página .jsp se cargará normalmente.
+    // 5. Si el código llega hasta aquí, el usuario TIENE PERMISO.
+    
+    // --- 2. LÓGICA PARA "BUSCAR" Y RELLENAR EL FORMULARIO ---
+    Cliente cliente = (Cliente) request.getAttribute("clienteEncontrado");
+    if (cliente == null) {
+        // Si no se buscó nada, creamos un cliente vacío para evitar errores
+        cliente = new Cliente();
+    }
+    // --------------------------------------------------------
 %>
 
 <!DOCTYPE html>
@@ -96,40 +103,68 @@
         </div>
         
         <div class="card-body">
+            
+            <%-- 
+              --- 3. BLOQUE DE MENSAJES DE ÉXITO/ERROR ---
+              (Muestra lo que envía el ClienteServlet)
+            --%>
+            <% 
+                String error = (String) request.getAttribute("error");
+                String mensaje = (String) request.getAttribute("mensaje");
+                
+                if (error != null) {
+                    out.println("<div class='alert alert-danger' role='alert'>" + error + "</div>");
+                }
+                if (mensaje != null) {
+                    out.println("<div class='alert alert-success' role='alert'>" + mensaje + "</div>");
+                }
+            %>
+            <%-- --- FIN DEL BLOQUE DE MENSAJES --- --%>
+            
             <form action="ClienteServlet" method="post">
                 
                 <div class="row g-3">
                     
                     <div class="col-lg-8">
                         
+                        <!-- 
+                          --- 4. INPUTS CON ATRIBUTO 'value' ---
+                          (Para rellenar el formulario después de "Buscar")
+                        -->
                         <div class="mb-3">
                             <label for="cedula" class="form-label fw-bold">Cedula:</label>
-                            <input type="text" class="form-control" id="cedula" name="cedula" required>
+                            <input type="text" class="form-control" id="cedula" name="cedula" 
+                                   value="<%= (cliente.getCedula() != null) ? cliente.getCedula() : "" %>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold">Nombre:</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   value="<%= (cliente.getNombre() != null) ? cliente.getNombre() : "" %>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="apellido" class="form-label fw-bold">Apellido:</label>
-                            <input type="text" class="form-control" id="apellido" name="apellido" required>
+                            <input type="text" class="form-control" id="apellido" name="apellido" 
+                                   value="<%= (cliente.getApellido() != null) ? cliente.getApellido() : "" %>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="telefono" class="form-label fw-bold">Telefono:</label>
-                            <input type="tel" class="form-control" id="telefono" name="telefono">
+                            <input type="tel" class="form-control" id="telefono" name="telefono"
+                                   value="<%= (cliente.getTelefono() != null) ? cliente.getTelefono() : "" %>">
                         </div>
 
                         <div class="mb-3">
                             <label for="direccion" class="form-label fw-bold">Direccion:</label>
-                            <input type="text" class="form-control" id="direccion" name="direccion">
+                            <input type="text" class="form-control" id="direccion" name="direccion"
+                                   value="<%= (cliente.getDireccion() != null) ? cliente.getDireccion() : "" %>">
                         </div>
 
                         <div class="mb-3">
                             <label for="correo" class="form-label fw-bold">Correo:</label>
-                            <input type="email" class="form-control" id="correo" name="correo">
+                            <input type="email" class="form-control" id="correo" name="correo"
+                                   value="<%= (cliente.getCorreo() != null) ? cliente.getCorreo() : "" %>">
                         </div>
                         
                     </div>
@@ -139,10 +174,11 @@
                             <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-custom-width">Guardar</button>
                             <button type="submit" name="accion" value="eliminar" class="btn btn-secondary btn-custom-width">Eliminar</button>
                             <button type="submit" name="accion" value="buscar" class="btn btn-secondary btn-custom-width">Buscar</button>
-                            <button type="button" onclick="window.location.reload();" class="btn btn-secondary btn-custom-width">Nuevo</button>
+                            <!-- El botón "Nuevo" ahora limpia el formulario recargando la página -->
+                            <button type="button" onclick="window.location.href='NuevoCliente.jsp';" class="btn btn-secondary btn-custom-width">Nuevo</button>
                             
-                                 <!-- NUEVO BOTÓN DE REGRESO AL MENÚ -->
-                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary btn-custom-width">Regresar</button>
+                                <!-- NUEVO BOTÓN DE REGRESO AL MENÚ -->
+                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary btn-custom-width">Regresar</button>
                         </div>
                     </div>
                 </div>

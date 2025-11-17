@@ -1,6 +1,8 @@
 package hotelweb.controllers;
 
 // Imports de Java
+import hotelweb.dao.UsuarioManager;
+import hotelweb.models.Usuario;
 import java.io.IOException;
 
 // Imports de Servlet (javax)

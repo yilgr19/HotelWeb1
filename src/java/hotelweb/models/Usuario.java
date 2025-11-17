@@ -1,4 +1,4 @@
-package hotelweb.controllers;
+package hotelweb.models;
 
 public class Usuario {
     

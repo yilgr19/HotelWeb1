@@ -1,5 +1,5 @@
-<%@ page import="hotelweb.controllers.Usuario" %>
-<%@ page import="hotelweb.controllers.UsuarioManager" %>
+<%@ page import="hotelweb.models.Usuario" %>
+<%@ page import="hotelweb.dao.UsuarioManager" %>
 <%
     // 1. OBTENER EL USUARIO DE LA SESIÓN
     Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");

@@ -1,3 +1,5 @@
+<%@ page import="hotelweb.models.Usuario" %>
+<%@ page import="hotelweb.dao.UsuarioManager" %>
 
 <!DOCTYPE html>
 <html>

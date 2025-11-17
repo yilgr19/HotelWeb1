@@ -1,5 +1,6 @@
-package hotelweb.controllers;
+package hotelweb.dao;
 
+import hotelweb.models.Usuario;
 import java.util.ArrayList; 
 import java.util.List;      
 

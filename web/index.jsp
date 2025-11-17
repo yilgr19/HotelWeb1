@@ -1,14 +1,3 @@
-<%-- 
-  PASO 1: REVISAR SI YA HAY UNA SESIÓN ACTIVA ("roles activos")
-  (Debe ser el mismo nombre que pusiste en LoginServlet: "usuarioLogueado")
---%>
-<%
-    if (session.getAttribute("usuarioLogueado") != null) {
-        // Si hay una sesión, lo mandamos al dashboard (¡Cámbialo por tu página principal!)
-        response.sendRedirect("dashboard.jsp"); 
-        return; // Detiene la carga del resto de la página (el formulario de login)
-    }
-%>
 
 <!DOCTYPE html>
 <html lang="es">

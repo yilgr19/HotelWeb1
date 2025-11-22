@@ -109,6 +109,17 @@
         </div>
         
         <div class="card-body">
+            <% 
+                String error = (String) request.getAttribute("error");
+                String mensaje = (String) request.getAttribute("mensaje");
+                
+                if (error != null) {
+                    out.println("<div class='alert alert-danger' role='alert'>" + error + "</div>");
+                }
+                if (mensaje != null) {
+                    out.println("<div class='alert alert-success' role='alert'>" + mensaje + "</div>");
+                }
+            %>
             <form action="ReservaServlet" method="post">
                 
                 <!-- ROW PRINCIPAL: Contiene todos los campos -->
@@ -201,7 +212,8 @@
 
                         <div class="mb-3">
                             <label for="cedulaHuesped" class="form-label fw-bold">Cédula:</label>
-                            <input type="text" class="form-control" id="cedulaHuesped" name="cedulaHuesped" required>
+                            <!-- Línea 144 aprox -->
+                            <input type="text" class="form-control" id="cedula" name="cedula" required placeholder="Ingrese cédula existente">
                         </div>
                         
                         <div class="mb-3">
@@ -222,7 +234,7 @@
                         <!-- SECCIÓN 5: BOTONES PRINCIPALES -->
                         <div class="botones-crud mt-4"> 
                             <!-- Botón Reservar: Color Azul Primario -->
-                            <button type="submit" name="accion" value="Reservar" class="btn btn-reservar btn-custom-width fw-bold">Reservar</button>
+                           <button type="submit" name="accion" value="Reservar" class="btn btn-primary">Reservar</button>
                             <!-- Botón Buscar: Color Gris Secundario -->
                             <button type="submit" name="accion" value="Buscar" class="btn btn-secondary btn-custom-width">Buscar</button>
                             <!-- Botón Cancelar: Color Gris Secundario -->

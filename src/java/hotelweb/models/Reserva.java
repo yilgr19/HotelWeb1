@@ -13,12 +13,15 @@ public class Reserva {
     private String estadoReserva;
     private String clienteCedula;
     
-    // NUEVOS CAMPOS (Esto es lo que te falta)
+    // CAMPOS DE CLIENTE (Guardados en la reserva)
     private String clienteNombre;
     private String clienteApellido;
     private String clienteTelefono;
 
-    // Constructor para Registrar (Sin ID)
+    // Constructor vacío
+    public Reserva() {}
+
+    // Constructor para REGISTRAR (Sin ID)
     public Reserva(String fechaEntrada, String horaEntrada, String fechaSalida, String horaSalida, 
                    String tipoHabitacion, int numHuespedes, String habitacionAsignada, 
                    String metodoPago, String estadoReserva, String clienteCedula,
@@ -38,7 +41,7 @@ public class Reserva {
         this.clienteTelefono = clienteTelefono;
     }
 
-    // Constructor para Leer (Con ID)
+    // Constructor para LEER/BUSCAR (Con ID)
     public Reserva(int idReserva, String fechaEntrada, String horaEntrada, String fechaSalida, String horaSalida, 
                    String tipoHabitacion, int numHuespedes, String habitacionAsignada, 
                    String metodoPago, String estadoReserva, String clienteCedula,
@@ -59,33 +62,41 @@ public class Reserva {
         this.clienteTelefono = clienteTelefono;
     }
 
-    public Reserva() {}
-
-    // Getters y Setters antiguos
+    // GETTERS Y SETTERS
     public int getIdReserva() { return idReserva; }
     public void setIdReserva(int idReserva) { this.idReserva = idReserva; }
+    
     public String getFechaEntrada() { return fechaEntrada; }
     public void setFechaEntrada(String fechaEntrada) { this.fechaEntrada = fechaEntrada; }
+    
     public String getHoraEntrada() { return horaEntrada; }
     public void setHoraEntrada(String horaEntrada) { this.horaEntrada = horaEntrada; }
+    
     public String getFechaSalida() { return fechaSalida; }
     public void setFechaSalida(String fechaSalida) { this.fechaSalida = fechaSalida; }
+    
     public String getHoraSalida() { return horaSalida; }
     public void setHoraSalida(String horaSalida) { this.horaSalida = horaSalida; }
+    
     public String getTipoHabitacion() { return tipoHabitacion; }
     public void setTipoHabitacion(String tipoHabitacion) { this.tipoHabitacion = tipoHabitacion; }
+    
     public int getNumHuespedes() { return numHuespedes; }
     public void setNumHuespedes(int numHuespedes) { this.numHuespedes = numHuespedes; }
+    
     public String getHabitacionAsignada() { return habitacionAsignada; }
     public void setHabitacionAsignada(String habitacionAsignada) { this.habitacionAsignada = habitacionAsignada; }
+    
     public String getMetodoPago() { return metodoPago; }
     public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
+    
     public String getEstadoReserva() { return estadoReserva; }
     public void setEstadoReserva(String estadoReserva) { this.estadoReserva = estadoReserva; }
+    
     public String getCedulaCliente() { return clienteCedula; }
     public void setCedulaCliente(String clienteCedula) { this.clienteCedula = clienteCedula; }
-
-    // NUEVOS GETTERS Y SETTERS
+    
+    // NUEVOS GETTERS PARA LOS DATOS DEL CLIENTE
     public String getClienteNombre() { return clienteNombre; }
     public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
     

@@ -20,19 +20,18 @@ public class ReservaServlet extends HttpServlet {
         
         request.setCharacterEncoding("UTF-8");
         String accion = request.getParameter("accion");
-        String cedula = request.getParameter("cedula"); 
+        String cedula = request.getParameter("cedula");
         
         ReservaDAO reservaDao = new ReservaDAO();
         HabitacionDAO habitacionDao = new HabitacionDAO();
 
         try {
             if ("Reservar".equals(accion)) {
-                // 1. Recoger datos
                 String fechaEntrada = request.getParameter("fechaEntrada");
                 String horaEntrada  = request.getParameter("horaEntrada");
                 String fechaSalida  = request.getParameter("fechaSalida");
                 String horaSalida   = request.getParameter("horaSalida");
-                String tipoHabitacion = request.getParameter("tipoHabitacion"); 
+                String tipoHabitacion = request.getParameter("tipoHabitacion");
                 String metodoPago = request.getParameter("metodoPago");
                 String estadoReserva = request.getParameter("estadoReserva");
                 String nombre = request.getParameter("nombre");
@@ -42,48 +41,37 @@ public class ReservaServlet extends HttpServlet {
                 int numHuespedes = 1;
                 try {
                     numHuespedes = Integer.parseInt(request.getParameter("numHuespedes"));
-                } catch (NumberFormatException e) { numHuespedes = 1; }
+                } catch (NumberFormatException e) {}
 
-                // 2. VALIDACIÓN DE CAPACIDAD (REQUISITO: Simple=1, Doble=2, Suite=4)
-                int capacidadMaxima = 10;
+                // Validar Capacidad
+                int max = 10;
                 if(tipoHabitacion != null) {
-                    switch (tipoHabitacion.toLowerCase()) {
-                        case "simple": capacidadMaxima = 1; break;
-                        case "doble":  capacidadMaxima = 2; break;
-                        case "suite":  capacidadMaxima = 4; break;
+                    switch(tipoHabitacion.toLowerCase()) {
+                        case "simple": max=1; break;
+                        case "doble": max=2; break;
+                        case "suite": max=4; break;
                     }
                 }
-
-                if (numHuespedes > capacidadMaxima) {
-                    request.setAttribute("error", "Error: La habitación " + tipoHabitacion + 
-                                         " permite máximo " + capacidadMaxima + " huéspedes.");
+                if(numHuespedes > max) {
+                    request.setAttribute("error", "Error: " + tipoHabitacion + " permite máx. " + max + " personas.");
                     request.getRequestDispatcher("NuevaReserva.jsp").forward(request, response);
-                    return; 
+                    return;
                 }
 
-                // 3. BUSCAR HABITACIÓN DISPONIBLE
-                // Usamos el método corregido del DAO que ignora mayúsculas/minúsculas
+                // Asignar Habitación
                 String habitacionAsignada = habitacionDao.obtenerHabitacionDisponible(tipoHabitacion);
 
-                System.out.println("DEBUG SERVLET: Resultado búsqueda habitación: " + habitacionAsignada);
-
                 if (habitacionAsignada == null) {
-                    // SI ES NULL, MANDAMOS ERROR Y NO GUARDAMOS
-                    request.setAttribute("error", "Lo sentimos, no hay habitaciones de tipo '" + 
-                                         tipoHabitacion + "' disponibles en este momento.");
+                    request.setAttribute("error", "No hay habitaciones " + tipoHabitacion + " disponibles.");
                 } else {
-                    // 4. SI HAY HABITACIÓN, PROCEDEMOS A GUARDAR
-                    Reserva nuevaReserva = new Reserva(
-                        fechaEntrada, horaEntrada, fechaSalida, horaSalida, 
-                        tipoHabitacion, numHuespedes, habitacionAsignada, // Asignamos la encontrada
-                        metodoPago, estadoReserva, cedula,
-                        nombre, apellido, telefono 
-                    );
+                    Reserva r = new Reserva(fechaEntrada, horaEntrada, fechaSalida, horaSalida, 
+                            tipoHabitacion, numHuespedes, habitacionAsignada, metodoPago, estadoReserva, cedula,
+                            nombre, apellido, telefono); // Pasamos los datos del cliente
 
-                    if(reservaDao.registrarReserva(nuevaReserva)) {
-                        request.setAttribute("mensaje", "¡Reserva Exitosa! Se ha asignado la habitación N°: " + habitacionAsignada);
+                    if(reservaDao.registrarReserva(r)) {
+                        request.setAttribute("mensaje", "Reserva Exitosa. Habitación: " + habitacionAsignada);
                     } else {
-                        request.setAttribute("error", "Error al guardar en base de datos.");
+                        request.setAttribute("error", "Error al guardar en BD.");
                     }
                 }
 
@@ -91,31 +79,21 @@ public class ReservaServlet extends HttpServlet {
                 Reserva r = reservaDao.buscarReservaPorCedula(cedula);
                 if (r != null) {
                     request.setAttribute("reservaEncontrada", r);
-                    request.setAttribute("mensaje", "Datos cargados correctamente.");
+                    request.setAttribute("mensaje", "Datos encontrados.");
                 } else {
-                    request.setAttribute("error", "No se encontró reserva con esa cédula.");
+                    request.setAttribute("error", "No se encontró reserva.");
                 }
-                
+
             } else if ("Eliminar".equals(accion)) {
-                // Primero obtenemos la reserva para saber qué habitación liberar
-                Reserva r = reservaDao.buscarReservaPorCedula(cedula);
-                
-                if (r != null) {
-                    if(reservaDao.eliminarReservaPorCedula(cedula)) {
-                        // IMPORTANTE: Liberamos la habitación (volvemos a ponerla 'Disponible')
-                        habitacionDao.cambiarEstadoHabitacion(r.getHabitacionAsignada(), "Disponible");
-                        request.setAttribute("mensaje", "Reserva eliminada y habitación " + r.getHabitacionAsignada() + " liberada.");
-                    } else {
-                        request.setAttribute("error", "No se pudo eliminar la reserva.");
-                    }
+                if (reservaDao.eliminarReservaPorCedula(cedula)) {
+                    request.setAttribute("mensaje", "Reserva eliminada.");
                 } else {
-                    request.setAttribute("error", "No existe reserva para eliminar con esa cédula.");
+                    request.setAttribute("error", "No se pudo eliminar.");
                 }
             }
-            
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Error del sistema: " + e.getMessage());
+            request.setAttribute("error", "Error: " + e.getMessage());
         }
 
         request.getRequestDispatcher("NuevaReserva.jsp").forward(request, response);

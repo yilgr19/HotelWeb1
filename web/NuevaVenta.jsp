@@ -1,235 +1,291 @@
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="hotelweb.models.Usuario" %>
-<%@ page import="hotelweb.dao.UsuarioManager" %>
+<%@ page import="hotelweb.dao.VentaDAO" %>
+<jsp:useBean id="daoV" class="hotelweb.dao.VentaDAO" scope="page" />
 <%
-    // 1. OBTENER EL USUARIO DE LA SESIÓN
+    // 1. SEGURIDAD
     Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-
-    // 2. SI NO HAY SESIÓN, ¡AFUERA!
-    // (Redirige al login)
-    if (usuarioLogueado == null) {
-        response.sendRedirect("index.jsp?error=sesion_expirada");
-        return;
-    }
-
-    // 3. OBTENER EL NOMBRE DE ESTA PÁGINA
-    String paginaActual = request.getRequestURI().substring(request.getContextPath().length() + 1);
-
-    // 4. VERIFICAR PERMISO CON EL MANAGER
-    if (!UsuarioManager.tieneAccesoPagina(usuarioLogueado, paginaActual)) {
-        
-        // ¡ACCESO DENEGADO!
-        // Redirigimos al usuario a su menú (o una página de error)
-        // (Asumiendo que "Menu.jsp" es seguro para todos)
-        response.sendRedirect("Menu.jsp?error=acceso_denegado");
-        return;
-    }
-
-    // Si el código llega hasta aquí, el usuario TIENE PERMISO.
-    // La página .jsp se cargará normalmente.
+    if (usuarioLogueado == null) { response.sendRedirect("index.jsp?error=sesion_expirada"); return; }
+    
+    // 2. Obtener el nÃºmero de factura
+    String proxFactura = daoV.generarNumeroFactura();
 %>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registra Nueva Venta (Sistema de Ventas)</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    
-    <style>
-        /* Estilos base para centrar el formulario y usar tema oscuro */
-        body {
-            background-color: #343a40;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .form-dark-card {
-            /* AUMENTO DEL ANCHO: de 800px a 1000px para evitar scroll y usar más espacio */
-            max-width: 1000px; 
-            width: 95%; /* Usar un 95% del ancho de la pantalla */
-            background-color: #212529; /* Dark background */
-            border-radius: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            color: #f8f9fa;
-        }
-
-        .card-header {
-            background-color: #212529; /* Primary blue header for visibility */
-            border-top-left-radius: 1rem;
-            border-top-right-radius: 1rem;
-            color: white;
-            padding: 1rem 0;
-        }
-        
-        .form-control, .form-select {
-            background-color: #495057; 
-            color: #fff; 
-            border: 1px solid #6c757d;
-            border-radius: 0.5rem;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: #495057;
-            color: #fff;
-            border-color: #0d6efd; 
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
-        
-        .form-label {
-            font-weight: bold;
-            color: #adb5bd;
-        }
-        
-        /* BOTONES: Aseguramos un ancho mínimo para que sean legibles */
-        .btn-responsive {
-            flex-grow: 1; /* Permite que los botones crezcan y ocupen el espacio disponible */
-            max-width: 150px;
-        }
-
-        .read-only-field {
-            background-color: #343a40 !important; /* Más oscuro para indicar que es de solo lectura */
-            border-color: #495057 !important;
-            color: #fff !important;
-        }
-        
-        /* Estilos para el título de la sección de totales */
-        .section-title {
-            color: #0d6efd;
-            border-bottom: 2px solid white;
-            padding-bottom: 0.5rem;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
+    <title>Nueva Venta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style> 
+        body { background-color: #343a40; color: white; } 
+        .form-control[readonly] { background-color: #495057; color: #fff; }
     </style>
 </head>
 <body>
-    
-    <div class="card form-dark-card">
+    <div class="container mt-4">
+        <h2 class="text-center mb-3">Registro de Ventas</h2>
         
-         <div class="card-header bg-black text-center py-3 rounded-top-3">
-            <h2 class="mb-0">Nueva Venta</h2>
-        </div>
-        
-        <div class="card-body">
-            <form id="ventaForm" action="VentaServlet" method="post">
-                <input type="hidden" name="id" value="0"> <!-- ID de Venta, lo gestiona el backend -->
-                
-                <div class="row g-4">
-                    
-                    <!-- Columna Izquierda: Datos del Cliente, Producto y Pago (Ocupa más espacio en pantallas grandes) -->
-                    <div class="col-lg-8">
-                        
-                        <div class="section-title text-white">Datos del Cliente</div>
+        <% String err = (String) request.getAttribute("error"); 
+           if(err!=null) out.print("<div class='alert alert-danger'>"+err+"</div>"); %>
 
-                        <div class="row g-3 mb-4">
-                            <!-- Cédula del Cliente -->
-                            <div class="col-md-6">
-                                <label for="cedulaCliente" class="form-label text-white">Cédula del Cliente:</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="cedulaCliente" name="cedulaCliente" required>
-                                    <button class="btn btn-primary" type="button" id="btnBuscarCliente" onclick="buscarCliente()">Buscar Cliente</button>
-                                </div>
-                            </div>
-                            
-                            <!-- Nombre del Cliente (Sólo lectura) -->
-                            <div class="col-md-6">
-                                <label for="nombreCliente" class="form-label text-white">Nombre del Cliente:</label>
-                                <input type="text" class="form-control read-only-field" id="nombreCliente" value="Pendiente de búsqueda" readonly>
-                            </div>
+        <form action="VentaServlet" method="post" id="formVenta">
+            <div class="card bg-dark text-white border-secondary mb-3">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label>Factura NÂ°</label>
+                            <input type="text" class="form-control text-warning fw-bold" name="numFactura" value="<%= proxFactura %>" readonly>
                         </div>
-
-                        <div class="section-title text-white">Detalle del Producto</div>
-
-                        <div class="row g-3 mb-4">
-                            <!-- ID/Código del Producto -->
-                            <div class="col-md-6">
-                                <label for="codigoProducto" class="form-label text-white">Código del Producto:</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="codigoProducto" name="codigoProducto" required>
-                                    <button class="btn btn-primary" type="button" id="btnBuscarProducto" onclick="buscarProducto()">Buscar Producto</button>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="cantidad" class="form-label text-white">Cantidad:</label>
-                                <input type="number" class="form-control" id="cantidad" name="cantidad" value="1" min="1" required onchange="calcularTotales()">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="descripcion" class="form-label text-white">Descripción:</label>
-                                <input type="text" class="form-control read-only-field" id="descripcion" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="precioVenta" class="form-label text-white">Precio Unitario:</label>
-                                <input type="text" class="form-control read-only-field" id="precioVenta" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="ivaProducto" class="form-label text-white">Tasa IVA Aplicada:</label>
-                                <input type="text" class="form-control read-only-field" id="ivaProducto" readonly>
-                                <input type="hidden" id="ivaPorcentaje" value="0"> <!-- Almacena el % del IVA -->
-                            </div>
+                        <div class="col-md-3">
+                            <label>CÃ©dula Cliente</label>
+                            <input type="text" id="txtCedula" class="form-control" name="cedula" placeholder="CÃ©dula/ID Cliente" required onchange="buscarClientePorCedula()">
                         </div>
-
-                        <!-- Información de Pago -->
-                        <div class="section-title text-white">Información de Pago</div>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label for="tipoPago" class="form-label">Tipo de Pago:</label>
-                                <select class="form-select" id="tipoPago" name="tipoPago" required>
-                                    <option value="" selected disabled>Seleccione...</option>
-                                    <option value="EFECTIVO">Efectivo</option>
-                                    <option value="TARJETA">Tarjeta</option>
-                                    <option value="TRANSFERENCIA">Transferencia</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="fecha" class="form-label text-white">Fecha (Automática):</label>
-                                <input type="text" class="form-control read-only-field" id="fecha" value="Fecha/Hora de Registro" readonly>
-                            </div>
+                        <div class="col-md-3">
+                            <label>Nombre Cliente</label>
+                            <input type="text" id="txtNombreCliente" class="form-control" name="nombre" placeholder="Nombre completo" required>
                         </div>
-
-                        <!-- BOTONES AHORA EN FILA ABAJO DE LOS CAMPOS PRINCIPALES -->
-                        <div class="section-title text-white">Acciones</div>
-                        <div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
-                            <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-responsive" id="btnRegistrarVenta" disabled>Registrar</button>
-                            <button type="button" name="accion" value="consultar" class="btn btn-secondary btn-responsive">Consultar</button>
-                            <button type="button" name="accion" value="limpiar" class="btn btn-secondary btn-responsive" onclick="window.location.reload();">Nuevo</button>
-                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-info btn-responsive">Regresar</button>
+                         <div class="col-md-3">
+                            <label>MÃ©todo Pago</label>
+                            <select class="form-select" name="metodoPago">
+                                <option>Efectivo</option>
+                                <option>Tarjeta</option>
+                                <option>Transferencia</option>
+                            </select>
                         </div>
-                    </div> <!-- Fin Columna Izquierda -->
-
-                    <!-- Columna Derecha: Totales (Mantiene su posición para destacar los valores) -->
-                    <div class="col-lg-4">
-                        <div class="section-title text-center text-white">Totales de Venta</div>
-                        
-                        <div class="d-grid gap-2 mb-4">
-                            <label for="total" class="form-label">Total Venta:</label>
-                            <input type="text" class="form-control read-only-field text-center fs-3 py-3" id="total" name="total" value="0.00" readonly>
-                            
-                            <label for="subtotal" class="form-label mt-3">Subtotal Base:</label>
-                            <input type="text" class="form-control read-only-field text-center" id="subtotal" value="0.00" readonly>
-                            
-                            <label for="ivaTotal" class="form-label mt-2">Valor Total IVA:</label>
-                            <input type="text" class="form-control read-only-field text-center" id="ivaTotal" value="0.00" readonly>
-                            
-                            <!-- Campos ocultos para enviar los valores correctos al backend según tu estructura de tabla -->
-                            <input type="hidden" name="iva5" id="iva5" value="0.00">
-                            <input type="hidden" name="iva19" id="iva19" value="0.00">
-                            <input type="hidden" name="exento" id="exento" value="0.00">
-                        </div>
-                    </div> <!-- Fin Columna Derecha -->
+                    </div>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="card bg-secondary bg-opacity-10 border-secondary mb-3">
+                <div class="card-body">
+                    <div class="row align-items-end">
+                        <div class="col-md-4">
+                            <label>CÃ³digo Producto</label>
+                            <input type="text" id="txtCodigo" class="form-control" placeholder="Escanea o escribe" autofocus>
+                        </div>
+                         <div class="col-md-4">
+                            <label>Nombre / Precio / Impuesto</label>
+                            <input type="text" id="txtDisplayInfo" class="form-control" readonly placeholder="Se cargan automÃ¡ticamete al buscar">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Cant. a Vender</label>
+                            <input type="number" id="txtCantidad" class="form-control" value="1" min="1">
+                        </div>
+                        
+                        <input type="hidden" id="precioUnitarioBase" value="0.0">
+                        <input type="hidden" id="porcentajeImpuesto" value="0.0">
+                        <input type="hidden" id="stockDisponible" value="0"> 
+
+                         <div class="col-md-2">
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn btn-success w-100" onclick="buscarProductoYAgregar()">
+                                + Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-dark table-hover border text-center">
+                <thead>
+                    <tr>
+                        <th>CÃ³digo</th>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th>Precio Unit. (Base)</th>
+                        <th>Subtotal (con IVA)</th>
+                        <th>AcciÃ³n</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla">
+                    </tbody>
+            </table>
+
+            <div class="row justify-content-end">
+                <div class="col-md-4">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text bg-dark text-white border-secondary">Subtotal (Base):</span>
+                        <input type="text" class="form-control bg-dark text-white border-secondary text-end" id="subtotal" name="subtotal" value="0.00" readonly>
+                    </div>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text bg-dark text-white border-secondary">Total IVA:</span>
+                        <input type="text" class="form-control bg-dark text-white border-secondary text-end" id="ivaTotal" name="ivaTotal" value="0.00" readonly>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-success text-white border-success fw-bold">TOTAL PAGAR:</span>
+                        <input type="text" class="form-control bg-dark text-success border-success text-end fw-bold fs-4" id="total" name="total" value="0.00" readonly>
+                    </div>
+                    
+                    <button type="submit" name="accion" value="guardar_venta" class="btn btn-primary w-100 btn-lg">
+                        GUARDAR Y GENERAR FACTURA
+                    </button>
+                    <a href="Menu.jsp" class="btn btn-secondary w-100 mt-2">Cancelar</a>
+                </div>
+            </div>
+        </form>
     </div>
-    
- 
+
+    <script>
+        const servletUrl = "VentaServlet";
+
+        // ðŸ›‘ FUNCIÃ“N NUEVA: BÃºsqueda de Cliente por CÃ©dula (AJAX)
+        function buscarClientePorCedula() {
+            const cedula = document.getElementById("txtCedula").value.trim();
+            const nombreInput = document.getElementById("txtNombreCliente");
+
+            // 1. Limpiar y resetear el campo de nombre
+            nombreInput.value = "";
+            nombreInput.readOnly = false;
+            nombreInput.placeholder = "Nombre completo"; 
+
+            if (cedula.length < 5) {
+                return; 
+            }
+            
+            nombreInput.placeholder = "Buscando cliente...";
+
+            // 2. PeticiÃ³n AJAX al Servlet
+            fetch(servletUrl + "?accion=buscar_cliente_ajax&cedula=" + cedula)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.found) {
+                        // 3. Cliente encontrado
+                        nombreInput.value = data.nombre;
+                        nombreInput.readOnly = true; // Bloquear ediciÃ³n
+                        nombreInput.placeholder = data.nombre;
+                        document.getElementById("txtCodigo").focus(); // Mover foco al producto
+                    } else {
+                        // 4. Cliente NO encontrado
+                        alert("Â¡Cliente no registrado! âš ï¸ Por favor, ingrese el nombre del cliente para registrar la venta a su nombre.");
+                        nombreInput.value = "";
+                        nombreInput.readOnly = false; // Permitir al usuario escribir el nombre
+                        nombreInput.placeholder = "Cliente no existe. Escriba el nombre completo.";
+                        nombreInput.focus();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al buscar cliente:', error);
+                    alert("Error de conexiÃ³n al buscar cliente.");
+                    nombreInput.readOnly = false;
+                    nombreInput.placeholder = "Error de conexiÃ³n";
+                });
+        }
+        
+        // --- Funciones de Productos (Se mantienen con la validaciÃ³n de cliente) ---
+
+        function buscarProductoYAgregar() {
+            const cedula = document.getElementById("txtCedula").value.trim();
+            const nombre = document.getElementById("txtNombreCliente").value.trim();
+            
+            // ðŸ›‘ VALIDACIÃ“N ANTES DE AGREGAR PRODUCTOS
+            if (cedula === "" || nombre === "") {
+                alert("Primero debe ingresar la CÃ©dula y Nombre del cliente (se validan automÃ¡ticamente).");
+                document.getElementById("txtCedula").focus();
+                return;
+            }
+            
+            const codigo = document.getElementById("txtCodigo").value.trim();
+            const cantidad = parseInt(document.getElementById("txtCantidad").value || '0');
+
+            if (codigo === "") {
+                alert("Ingrese el cÃ³digo del producto.");
+                document.getElementById("txtCodigo").focus();
+                return;
+            }
+            if (cantidad <= 0 || isNaN(cantidad)) {
+                alert("Ingrese una cantidad vÃ¡lida.");
+                document.getElementById("txtCantidad").focus();
+                return;
+            }
+            
+            document.getElementById("txtDisplayInfo").value = "Buscando...";
+            
+            fetch(servletUrl + "?accion=buscar_producto_ajax&codigo=" + codigo)
+                .then(response => {
+                    if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        alert("Error: " + data.error);
+                        document.getElementById("txtDisplayInfo").value = "Error al buscar";
+                    } else if (data.existencia < cantidad) {
+                         alert(`Error: Stock insuficiente. Existencia actual: ${data.existencia}.`);
+                         document.getElementById("txtDisplayInfo").value = `Stock: ${data.existencia} (Insuficiente)`;
+                    } else {
+                        agregarProductoTabla(data.codigo, data.nombre, data.precio, data.impuesto, cantidad);
+                        document.getElementById("txtDisplayInfo").value = `OK: ${data.nombre} ($${data.precio.toFixed(2)} + ${data.impuesto}%)`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al buscar producto:', error);
+                    alert("Error de conexiÃ³n o servidor al buscar el producto.");
+                    document.getElementById("txtDisplayInfo").value = "Error de conexiÃ³n";
+                });
+        }
+
+        function agregarProductoTabla(codigo, nombre, precio, impuesto, cantidad) {
+            
+            const precioBaseUnitario = precio; 
+            const impuestoUnitario = precioBaseUnitario * (impuesto / 100.0);
+            const precioTotalUnitario = precioBaseUnitario + impuestoUnitario;
+            
+            const subtotalConIva = precioTotalUnitario * cantidad;
+            const subtotalIvaMonto = impuestoUnitario * cantidad;
+            const subtotalBaseMonto = precioBaseUnitario * cantidad;
+
+            let fila = `<tr data-iva-monto='${subtotalIvaMonto.toFixed(2)}' data-base-monto='${subtotalBaseMonto.toFixed(2)}'>` +
+                "<td><input type='hidden' name='tblCodigo' value='"+codigo+"'>"+codigo+"</td>" +
+                "<td><input type='hidden' name='tblNombre' value='"+nombre+"'>"+nombre+"</td>" +
+                "<td><input type='hidden' name='tblCantidad' value='"+cantidad+"'>"+cantidad+"</td>" +
+                "<td><input type='hidden' name='tblPrecio' value='"+precioBaseUnitario.toFixed(2)+"'>"+precioBaseUnitario.toFixed(2)+"</td>" +
+                "<td><input type='hidden' name='tblSubtotal' value='"+subtotalConIva.toFixed(2)+"'>"+subtotalConIva.toFixed(2)+"</td>" +
+                "<td><button type='button' class='btn btn-danger btn-sm' onclick='eliminarFila(this)'>X</button></td>" +
+                "</tr>";
+
+            document.getElementById("cuerpoTabla").innerHTML += fila;
+            calcularTotales();
+            
+            document.getElementById("txtCodigo").value = "";
+            document.getElementById("txtCantidad").value = "1";
+            document.getElementById("txtDisplayInfo").value = ""; 
+            document.getElementById("txtCodigo").focus(); 
+        }
+
+        function calcularTotales() {
+            let filas = document.getElementById("cuerpoTabla").rows;
+            let totalGeneral = 0;
+            let totalIva = 0;
+            let subtotalBase = 0;
+            
+            for (let i = 0; i < filas.length; i++) {
+                let subtotalConIva = parseFloat(filas[i].querySelector("input[name='tblSubtotal']").value);
+                let ivaMonto = parseFloat(filas[i].getAttribute("data-iva-monto")); 
+                let baseMonto = parseFloat(filas[i].getAttribute("data-base-monto")); 
+                
+                totalGeneral += subtotalConIva;
+                totalIva += ivaMonto;
+                subtotalBase += baseMonto; 
+            }
+            
+            document.getElementById("subtotal").value = subtotalBase.toFixed(2);
+            document.getElementById("ivaTotal").value = totalIva.toFixed(2);
+            document.getElementById("total").value = totalGeneral.toFixed(2);
+        }
+
+        function eliminarFila(btn) {
+            let fila = btn.parentNode.parentNode;
+            fila.parentNode.removeChild(fila);
+            calcularTotales();
+        }
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

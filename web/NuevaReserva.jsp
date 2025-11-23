@@ -1,32 +1,53 @@
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="hotelweb.models.Usuario" %>
 <%@ page import="hotelweb.dao.UsuarioManager" %>
-<%
-    // 1. OBTENER EL USUARIO DE LA SESIÓN
-    Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+<%@ page import="hotelweb.models.Reserva" %>
+<%@ page import="hotelweb.models.Cliente" %>
 
-    // 2. SI NO HAY SESIÓN, ¡AFUERA!
-    // (Redirige al login)
+<%
+    // 1. SEGURIDAD
+    Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
     if (usuarioLogueado == null) {
         response.sendRedirect("index.jsp?error=sesion_expirada");
         return;
     }
 
-    // 3. OBTENER EL NOMBRE DE ESTA PÁGINA
-    String paginaActual = request.getRequestURI().substring(request.getContextPath().length() + 1);
+    // 2. RECUPERAR DATOS
+    Reserva reservaFound = (Reserva) request.getAttribute("reservaEncontrada");
+    Cliente clienteFound = (Cliente) request.getAttribute("clienteEncontrado");
+    String mensajeServidor = (String) request.getAttribute("mensaje");
 
-    // 4. VERIFICAR PERMISO CON EL MANAGER
-    if (!UsuarioManager.tieneAccesoPagina(usuarioLogueado, paginaActual)) {
-        
-        // ¡ACCESO DENEGADO!
-        // Redirigimos al usuario a su menú (o una página de error)
-        // (Asumiendo que "Menu.jsp" es seguro para todos)
-        response.sendRedirect("Menu.jsp?error=acceso_denegado");
-        return;
+    // --- LÃ“GICA DE LIMPIEZA AUTOMÃTICA ---
+    // Detectamos si la acciÃ³n fue eliminar. Si el mensaje dice "eliminada", 
+    // forzamos que todas las variables se queden vacÃ­as para empezar de cero.
+    boolean fueEliminado = (mensajeServidor != null && mensajeServidor.toLowerCase().contains("eliminada"));
+
+    // 3. PREPARAR VARIABLES (Data Binding)
+    // Solo llenamos datos si NO fue eliminado y si encontramos una reserva.
+    String fechaEntradaVal = (!fueEliminado && reservaFound != null && reservaFound.getFechaEntrada() != null) ? reservaFound.getFechaEntrada() : "";
+    String horaEntradaVal  = (!fueEliminado && reservaFound != null && reservaFound.getHoraEntrada() != null) ? reservaFound.getHoraEntrada() : "14:00";
+    String fechaSalidaVal  = (!fueEliminado && reservaFound != null && reservaFound.getFechaSalida() != null) ? reservaFound.getFechaSalida() : "";
+    String horaSalidaVal   = (!fueEliminado && reservaFound != null && reservaFound.getHoraSalida() != null) ? reservaFound.getHoraSalida() : "12:00";
+    String habAsignadaVal  = (!fueEliminado && reservaFound != null && reservaFound.getHabitacionAsignada() != null) ? reservaFound.getHabitacionAsignada() : "";
+    int numHuespedesVal    = (!fueEliminado && reservaFound != null) ? reservaFound.getNumHuespedes() : 1;
+    
+    // CÃ©dula: Se limpia si fue eliminado.
+    String cedulaVal = "";
+    if (!fueEliminado) {
+        if (reservaFound != null && reservaFound.getCedulaCliente() != null) {
+            cedulaVal = reservaFound.getCedulaCliente();
+        } else if (request.getParameter("cedula") != null) {
+            cedulaVal = request.getParameter("cedula");
+        }
     }
 
-    // Si el código llega hasta aquí, el usuario TIENE PERMISO.
-    // La página .jsp se cargará normalmente.
+    // Datos Cliente: Se limpian si fue eliminado.
+    String nombreVal   = (!fueEliminado && clienteFound != null && clienteFound.getNombre() != null) ? clienteFound.getNombre() : "";
+    String apellidoVal = (!fueEliminado && clienteFound != null && clienteFound.getApellido() != null) ? clienteFound.getApellido() : "";
+    String telefonoVal = (!fueEliminado && clienteFound != null && clienteFound.getTelefono() != null) ? clienteFound.getTelefono() : "";
 %>
+
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -38,7 +59,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     
     <style>
-        /* Estilos base para centrar la tarjeta de reserva en la página */
+        /* Estilos base para centrar la tarjeta de reserva en la pÃ¡gina */
         body {
             /* Fondo oscuro para la consistencia del sistema */
             background-color: #343a40; 
@@ -46,14 +67,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px 0; /* Añadir padding para pantallas pequeñas */
+            padding: 20px 0; /* AÃ±adir padding para pantallas pequeÃ±as */
         }
 
         /* Estilo para el contenedor del formulario que lo hace oscuro */
         .form-dark-card {
-            max-width: 900px; /* Hacemos la tarjeta más ancha para los campos de reserva */
+            max-width: 900px; /* Hacemos la tarjeta mÃ¡s ancha para los campos de reserva */
             width: 95%;
-            /* Fondo gris oscuro, similar al formulario de Cliente/Habitación */
+            /* Fondo gris oscuro, similar al formulario de Cliente/HabitaciÃ³n */
             background-color: #212529; 
             border: none;
         }
@@ -72,13 +93,13 @@
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
         
-        /* Ajuste para que los botones de CRUD sean del mismo tamaño */
+        /* Ajuste para que los botones de CRUD sean del mismo tamaÃ±o */
         .btn-custom-width {
             width: 100px; 
             height: 40px;
         }
 
-        /* Alineación y espaciado de los grupos de botones de la derecha */
+        /* AlineaciÃ³n y espaciado de los grupos de botones de la derecha */
         .botones-crud {
             display: flex;
             flex-direction: column;
@@ -86,14 +107,14 @@
             padding-top: 20px; 
         }
         
-        /* Estilo personalizado para el botón de Reservar (Azul Primario) */
+        /* Estilo personalizado para el botÃ³n de Reservar (Azul Primario) */
         .btn-reservar {
             background-color: #0d6efd; /* Color azul de Bootstrap Primary */
             border-color: #0d6efd;
             color: white;
         }
         .btn-reservar:hover {
-            background-color: #0b5ed7; /* Azul ligeramente más oscuro al pasar el ratón */
+            background-color: #0b5ed7; /* Azul ligeramente mÃ¡s oscuro al pasar el ratÃ³n */
             border-color: #0a58ca;
         }
     </style>
@@ -103,7 +124,7 @@
     <!-- Contenedor principal: Tarjeta oscura (TEXT-WHITE) con sombra -->
     <div class="card form-dark-card text-white shadow-lg rounded-3">
         
-        <!-- Título/Cabecera de la Tarjeta (BG-BLACK) -->
+        <!-- TÃ­tulo/Cabecera de la Tarjeta (BG-BLACK) -->
         <div class="card-header bg-black text-center py-3 rounded-top-3">
             <h2 class="mb-0">Crear Nueva Reserva</h2>
         </div>
@@ -120,144 +141,124 @@
                     out.println("<div class='alert alert-success' role='alert'>" + mensaje + "</div>");
                 }
             %>
-            <form action="ReservaServlet" method="post">
-                
-                <!-- ROW PRINCIPAL: Contiene todos los campos -->
+            
+             <!-- DETECTOR DE CLIENTE FANTASMA -->
+            <% if (!fueEliminado && reservaFound != null && clienteFound == null) { %>
+                 <div class="alert alert-warning text-center small">
+                    <strong>âš  ATENCIÃ“N:</strong> Reserva encontrada, pero el Cliente no estÃ¡ registrado. Complete los datos abajo.
+                </div>
+            <% } %>
+             <form action="ReservaServlet" method="post">
                 <div class="row g-4">
                     
-                    <!-- COLUMNA IZQUIERDA: DATOS DE RESERVA -->
+                    <!-- IZQUIERDA: RESERVA -->
                     <div class="col-lg-7">
-                        
-                        <!-- SECCIÓN 1: FECHAS Y HORAS (Títulos en blanco) -->
                         <h4 class="text-white border-bottom border-secondary pb-2 mb-3">Fechas de Reserva</h4>
                         <div class="row g-3 mb-4">
-                            <!-- Fecha Entrada -->
                             <div class="col-md-6">
-                                <label for="fechaEntrada" class="form-label fw-bold">Fecha de Entrada:</label>
-                                <input type="date" class="form-control" id="fechaEntrada" name="fechaEntrada" required>
+                                <label class="form-label fw-bold">Fecha de Entrada:</label>
+                                <input type="text" class="form-control" name="fechaEntrada" value="<%= fechaEntradaVal %>" required placeholder="dd/mm/yyyy">
                             </div>
-                            <!-- Hora Entrada -->
                             <div class="col-md-6">
-                                <label for="horaEntrada" class="form-label fw-bold">Hora:</label>
-                                <input type="time" class="form-control" id="horaEntrada" name="horaEntrada">
+                                <label class="form-label fw-bold">Hora:</label>
+                                <input type="text" class="form-control" name="horaEntrada" value="<%= horaEntradaVal %>">
                             </div>
-
-                            <!-- Fecha Salida -->
                             <div class="col-md-6">
-                                <label for="fechaSalida" class="form-label fw-bold">Fecha de Salida:</label>
-                                <input type="date" class="form-control" id="fechaSalida" name="fechaSalida" required>
+                                <label class="form-label fw-bold">Fecha de Salida:</label>
+                                <input type="text" class="form-control" name="fechaSalida" value="<%= fechaSalidaVal %>" required placeholder="dd/mm/yyyy">
                             </div>
-                            <!-- Hora Salida -->
                             <div class="col-md-6">
-                                <label for="horaSalida" class="form-label fw-bold">Hora:</label>
-                                <input type="time" class="form-control" id="horaSalida" name="horaSalida">
+                                <label class="form-label fw-bold">Hora:</label>
+                                <input type="text" class="form-control" name="horaSalida" value="<%= horaSalidaVal %>">
                             </div>
                         </div>
 
-                        <!-- SECCIÓN 2: DETALLES DE HABITACIÓN (Títulos en blanco) -->
-                        <h4 class="text-white border-bottom border-secondary pb-2 mb-3">Detalles de Habitación</h4>
+                        <h4 class="text-white border-bottom border-secondary pb-2 mb-3">Detalles de HabitaciÃ³n</h4>
                         <div class="row g-3 mb-4">
-                            <!-- Tipo de Habitación -->
                             <div class="col-md-6">
-                                <label for="tipoHabitacion" class="form-label fw-bold">Tipo de Habitación:</label>
-                                <select class="form-select" id="tipoHabitacion" name="tipoHabitacion" required>
-                                    <option value="" selected disabled>Seleccione...</option>
-                                    <option value="simple">Simple</option>
-                                    <option value="doble">Doble</option>
-                                    <option value="suite">Suite</option>
+                                <label class="form-label fw-bold">Tipo de HabitaciÃ³n:</label>
+                                <select class="form-select" name="tipoHabitacion" required>
+                                    <option value="" disabled <%= (reservaFound==null || fueEliminado)?"selected":"" %>>Seleccione...</option>
+                                    <option value="simple" <%= (!fueEliminado && reservaFound!=null && "simple".equalsIgnoreCase(reservaFound.getTipoHabitacion()))?"selected":"" %>>Simple</option>
+                                    <option value="doble" <%= (!fueEliminado && reservaFound!=null && "doble".equalsIgnoreCase(reservaFound.getTipoHabitacion()))?"selected":"" %>>Doble</option>
+                                    <option value="suite" <%= (!fueEliminado && reservaFound!=null && "suite".equalsIgnoreCase(reservaFound.getTipoHabitacion()))?"selected":"" %>>Suite</option>
                                 </select>
                             </div>
-                            <!-- Número de Huéspedes -->
                             <div class="col-md-6">
-                                <label for="numHuespedes" class="form-label fw-bold">Número de Huéspedes:</label>
-                                <input type="number" class="form-control" id="numHuespedes" name="numHuespedes" min="1" value="1" required>
+                                <label class="form-label fw-bold">NÃºmero de HuÃ©spedes:</label>
+                                <input type="number" class="form-control" name="numHuespedes" min="1" value="<%= numHuespedesVal %>" required>
                             </div>
-                            <!-- Habitación Asignada (Campo de búsqueda/lectura) -->
                             <div class="col-12">
-                                <label for="habitacionAsignada" class="form-label fw-bold">Habitación Asignada (Búsqueda):</label>
-                                <input type="text" class="form-control" id="habitacionAsignada" name="habitacionAsignada" placeholder="Automáticamente al hacer clic en 'Buscar'">
+                                <label class="form-label fw-bold">HabitaciÃ³n Asignada:</label>
+                                <input type="text" class="form-control" name="habitacionAsignada" value="<%= habAsignadaVal %>" placeholder="Ej: 101">
                             </div>
                         </div>
 
-                        <!-- SECCIÓN 3: PAGO Y ESTADO (Títulos en blanco) -->
-                        <h4 class="text-white border-bottom border-secondary pb-2 mb-3">Información de Pago</h4>
-                        <div class="row g-3">
-                            <!-- Método de Pago -->
+                        <h4 class="text-white border-bottom border-secondary pb-2 mb-3">InformaciÃ³n de Pago</h4>
+                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="metodoPago" class="form-label fw-bold">Método de Pago:</label>
-                                <select class="form-select" id="metodoPago" name="metodoPago" required>
-                                    <option value="efectivo">Efectivo</option>
-                                    <option value="tarjeta">Tarjeta de Crédito/Débito</option>
-                                    <option value="transferencia">Transferencia</option>
+                                <label class="form-label fw-bold">MÃ©todo de Pago:</label>
+                                <select class="form-select" name="metodoPago" required>
+                                    <option value="efectivo" <%= (!fueEliminado && reservaFound!=null && "efectivo".equalsIgnoreCase(reservaFound.getMetodoPago()))?"selected":"" %>>Efectivo</option>
+                                    <option value="tarjeta" <%= (!fueEliminado && reservaFound!=null && "tarjeta".equalsIgnoreCase(reservaFound.getMetodoPago()))?"selected":"" %>>Tarjeta</option>
+                                    <option value="transferencia" <%= (!fueEliminado && reservaFound!=null && "transferencia".equalsIgnoreCase(reservaFound.getMetodoPago()))?"selected":"" %>>Transferencia</option>
                                 </select>
                             </div>
-                            <!-- Estado de Reserva -->
                             <div class="col-md-6">
-                                <label for="estadoReserva" class="form-label fw-bold">Estado de Reserva:</label>
-                                <select class="form-select" id="estadoReserva" name="estadoReserva">
-                                    <option value="pendiente">Pendiente</option>
-                                    <option value="confirmada" selected>Confirmada</option>
-                                    <option value="cancelada">Cancelada</option>
+                                <label class="form-label fw-bold">Estado de Reserva:</label>
+                                <select class="form-select" name="estadoReserva">
+                                    <option value="Confirmada" <%= (!fueEliminado && reservaFound!=null && "Confirmada".equalsIgnoreCase(reservaFound.getEstadoReserva()))?"selected":"" %>>Confirmada</option>
+                                    <option value="Pendiente" <%= (!fueEliminado && reservaFound!=null && "Pendiente".equalsIgnoreCase(reservaFound.getEstadoReserva()))?"selected":"" %>>Pendiente</option>
+                                    <option value="Cancelada" <%= (!fueEliminado && reservaFound!=null && "Cancelada".equalsIgnoreCase(reservaFound.getEstadoReserva()))?"selected":"" %>>Cancelada</option>
                                 </select>
                             </div>
                         </div>
-                        
                     </div>
                     
-                    <!-- COLUMNA DERECHA: DATOS DEL HUÉSPED Y BOTONES -->
+                    <!-- DERECHA: HUÃ‰SPED -->
                     <div class="col-lg-5 border-start border-secondary ps-lg-4">
                         
-                        <!-- SECCIÓN 4: DATOS DEL HUÉSPED (Título en blanco) -->
-                        <h4 class="text-white border-bottom border-secondary pb-2 mb-3">Datos del Huésped</h4>
-
+                        <h4 class="text-white border-bottom border-secondary pb-2 mb-3">Datos del HuÃ©sped</h4>
+                        
                         <div class="mb-3">
-                            <label for="cedulaHuesped" class="form-label fw-bold">Cédula:</label>
-                            <!-- Línea 144 aprox -->
-                            <input type="text" class="form-control" id="cedula" name="cedula" required placeholder="Ingrese cédula existente">
+                            <label class="form-label fw-bold text-warning">CÃ©dula:</label>
+                            <input type="text" class="form-control border-warning" id="cedula" name="cedula" value="<%= cedulaVal %>" required placeholder="Buscar o Nueva CÃ©dula">
                         </div>
                         
                         <div class="mb-3">
-                            <label for="nombreHuesped" class="form-label fw-bold">Nombre:</label>
-                            <input type="text" class="form-control" id="nombreHuesped" name="nombreHuesped">
+                            <label class="form-label fw-bold">Nombre:</label>
+                            <!-- CORREGIDO: value asociado a nombreVal (getNombres) -->
+                            <input type="text" class="form-control" name="nombres" value="<%= nombreVal %>" placeholder="Nombre">
                         </div>
-                        
+                         <div class="mb-3">
+                            <label class="form-label fw-bold">Apellido:</label>
+                            <!-- CORREGIDO: value asociado a apellidoVal (getApellidos) -->
+                            <input type="text" class="form-control" name="apellidos" value="<%= apellidoVal %>" placeholder="Apellido">
+                        </div>
                         <div class="mb-3">
-                            <label for="apellidoHuesped" class="form-label fw-bold">Apellido:</label>
-                            <input type="text" class="form-control" id="apellidoHuesped" name="apellidoHuesped">
+                            <label class="form-label fw-bold">TelÃ©fono:</label>
+                            <input type="text" class="form-control" name="telefono" value="<%= telefonoVal %>" placeholder="TelÃ©fono">
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="telefonoHuesped" class="form-label fw-bold">Teléfono:</label>
-                            <input type="text" class="form-control" id="telefonoHuesped" name="telefonoHuesped">
-                        </div>
-                        
-                        <!-- SECCIÓN 5: BOTONES PRINCIPALES -->
                         <div class="botones-crud mt-4"> 
-                            <!-- Botón Reservar: Color Azul Primario -->
-                           <button type="submit" name="accion" value="Reservar" class="btn btn-primary">Reservar</button>
-                            <!-- Botón Buscar: Color Gris Secundario -->
-                            <button type="submit" name="accion" value="Buscar" class="btn btn-secondary btn-custom-width">Buscar</button>
-                            <!-- Botón Cancelar: Color Gris Secundario -->
-                            <button type="submit" name="accion" value="Eliminar" class="btn btn-secondary btn-custom-width">Eliminar</button>
-                            <!-- Botón Nuevo: Color Gris Secundario -->
-                            <button type="button" onclick="window.location.reload();" class="btn btn-secondary btn-custom-width">Nuevo</button>
-                            
-                                  <!-- NUEVO BOTÓN DE REGRESO AL MENÚ -->
-                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary btn-custom-width">Regresar</button>
+                            <button type="submit" name="accion" value="Reservar" class="btn btn-reservar">Reservar</button>
+                            <div class="d-flex gap-2">
+                                <button type="submit" name="accion" value="Buscar" class="btn btn-info flex-fill text-white" formnovalidate>Buscar</button>
+                                <button type="submit" name="accion" value="Eliminar" class="btn btn-danger flex-fill" onclick="return confirm('Â¿Seguro que desea eliminar esta reserva?');" formnovalidate>Eliminar</button>
+                            </div>
+                            <a href="NuevaReserva.jsp" class="btn btn-secondary mt-2 text-decoration-none">Nuevo / Limpiar Campos</a>
+                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary mt-2 btn-custom-width" style="width: 100%">Regresar</button>
                         </div>
                         
                     </div>
                 </div>
             </form>
         </div>
-        
-        <!-- Pie de página opcional para la tarjeta -->
         <div class="card-footer text-end text-muted py-2 bg-black rounded-bottom-3">
-            <small>Sistema de Gestión de Reservas Hoteleras</small>
+            <small>Sistema de GestiÃ³n de Reservas Hoteleras</small>
         </div>
     </div>
     
-    <!-- JavaScript de BOOTSTRAP -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

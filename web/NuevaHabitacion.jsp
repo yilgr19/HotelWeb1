@@ -1,165 +1,135 @@
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="hotelweb.models.Usuario" %>
 <%@ page import="hotelweb.dao.UsuarioManager" %>
-<%
-    // 1. OBTENER EL USUARIO DE LA SESIÓN
-    Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+<%@ page import="hotelweb.models.Habitacion" %>
 
-    // 2. SI NO HAY SESIÓN, ¡AFUERA!
-    // (Redirige al login)
+<%
+    // 1. SEGURIDAD DE SESIÃ“N
+    Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
     if (usuarioLogueado == null) {
         response.sendRedirect("index.jsp?error=sesion_expirada");
         return;
     }
 
-    // 3. OBTENER EL NOMBRE DE ESTA PÁGINA
-    String paginaActual = request.getRequestURI().substring(request.getContextPath().length() + 1);
-
-    // 4. VERIFICAR PERMISO CON EL MANAGER
-    if (!UsuarioManager.tieneAccesoPagina(usuarioLogueado, paginaActual)) {
-        
-        // ¡ACCESO DENEGADO!
-        // Redirigimos al usuario a su menú (o una página de error)
-        // (Asumiendo que "Menu.jsp" es seguro para todos)
-        response.sendRedirect("Menu.jsp?error=acceso_denegado");
-        return;
-    }
-
-    // Si el código llega hasta aquí, el usuario TIENE PERMISO.
-    // La página .jsp se cargará normalmente.
+    // 2. RECUPERAR DATOS (Si venimos de buscar)
+    Habitacion habFound = (Habitacion) request.getAttribute("habitacionEncontrada");
+    
+    // Variables para llenar el formulario
+    String numVal = (habFound != null) ? habFound.getNumero() : "";
+    String tipoVal = (habFound != null) ? habFound.getTipo() : "";
+    String precioVal = (habFound != null) ? String.valueOf(habFound.getPrecio()) : "";
+    String estadoVal = (habFound != null) ? habFound.getEstado() : "";
 %>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Habitación (Bootstrap Dark)</title>
+    <title>Registro de HabitaciÃ³n (Bootstrap Dark)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- CSS de BOOTSTRAP -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
-        /* Estilos base para centrar el formulario en la página */
         body {
-            /* Usamos un fondo oscuro para que la tarjeta contraste */
             background-color: #343a40; 
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px 0;
         }
-
-        /* Estilo para el contenedor del formulario que lo hace oscuro como el Navbar */
         .form-dark-card {
-            max-width: 650px; 
-            width: 90%;
-            /* Fondo gris oscuro, similar al cuerpo del formulario de Cliente */
-            background-color: #212529; 
+            max-width: 600px;
+            width: 95%;
+            background-color: #212529;
             border: none;
         }
-
-        /* Estilo para los inputs, select y textarea para que contrasten mejor */
         .form-control, .form-select {
-            background-color: #495057; /* Fondo de campo gris oscuro */
-            color: #fff; /* Texto blanco en los campos */
+            background-color: #495057;
+            color: #fff;
             border-color: #6c757d;
         }
-
         .form-control:focus, .form-select:focus {
             background-color: #495057;
             color: #fff;
             border-color: #0d6efd; 
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
-        
-        /* Ajuste para que los botones sean más anchos (como en el formulario de Cliente) */
-        .btn-custom-width {
-            width: 100px; 
-        }
-
-        /* Ajuste para la columna de botones en pantallas grandes (Lg) */
-        @media (min-width: 992px) {
-            .botones-col {
-                /* Pequeño ajuste de padding para alinear con el primer campo */
-                padding-top: 1.25rem !important; 
-            }
+        .btn-custom-width { width: 100%; }
+        .botones-col {
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center;
         }
     </style>
 </head>
 <body>
     
-    <!-- Contenedor principal: Tarjeta oscura (TEXT-WHITE) con sombra -->
     <div class="card form-dark-card text-white shadow-lg rounded-3">
-        
-        <!-- Título/Cabecera de la Tarjeta (BG-BLACK simula la barra del Navbar) -->
         <div class="card-header bg-black text-center py-3 rounded-top-3">
-            <h2 class="mb-0">Registro de Habitación</h2>
+            <h2 class="mb-0">GestiÃ³n de Habitaciones</h2>
         </div>
         
         <div class="card-body">
+            <% 
+                String msj = (String) request.getAttribute("mensaje");
+                String err = (String) request.getAttribute("error");
+                if(msj != null) out.print("<div class='alert alert-success'>"+msj+"</div>");
+                if(err != null) out.print("<div class='alert alert-danger'>"+err+"</div>");
+            %>
+
             <form action="HabitacionServlet" method="post">
-                
-                <!-- ROW principal para campos y botones, usando espaciado 'g-3' -->
-                <div class="row g-3">
+                <div class="row g-4">
                     
-                    <!-- COLUMNA 1: CAMPOS DEL FORMULARIO (ocupa 8 de 12 columnas en pantallas grandes) -->
                     <div class="col-lg-8">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">NÃºmero de HabitaciÃ³n:</label>
+                            <input type="text" class="form-control" name="numero" value="<%= numVal %>" placeholder="Ej: 101" required>
+                        </div>
                         
-                        <!-- Numero -->
                         <div class="mb-3">
-                            <label for="numero" class="form-label fw-bold">Numero:</label>
-                            <input type="text" class="form-control" id="numero" name="numero" required>
-                        </div>
-
-                        <!-- Precio -->
-                        <div class="mb-3">
-                            <label for="precio" class="form-label fw-bold">Precio:</label>
-                            <!-- Usamos input type text para mayor flexibilidad o number si es necesario -->
-                            <input type="number" class="form-control" id="precio" name="precio" required step="0.01">
-                        </div>
-
-                        <!-- Descripcion (Usamos textarea para el campo grande) -->
-                        <div class="mb-3">
-                            <label for="descripcion" class="form-label fw-bold">Descripcion:</label>
-                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4"></textarea>
-                        </div>
-
-                        <!-- Estado (Usamos select/dropdown) -->
-                        <div class="mb-3">
-                            <label for="estado" class="form-label fw-bold">Estado:</label>
-                            <select class="form-select" id="estado" name="estado">
-                                <option value="desocupado">Desocupado</option>
-                                <option value="ocupado">Ocupado</option>
-                                <option value="mantenimiento">Mantenimiento</option>
+                            <label class="form-label fw-bold">Tipo:</label>
+                            <select class="form-select" name="tipo" required>
+                                <option value="" disabled <%= tipoVal.isEmpty()?"selected":"" %>>Seleccione...</option>
+                                <option value="Simple" <%= "Simple".equalsIgnoreCase(tipoVal)?"selected":"" %>>Simple</option>
+                                <option value="Doble" <%= "Doble".equalsIgnoreCase(tipoVal)?"selected":"" %>>Doble</option>
+                                <option value="Suite" <%= "Suite".equalsIgnoreCase(tipoVal)?"selected":"" %>>Suite</option>
                             </select>
                         </div>
 
-                        <!-- Disponibilidad -->
                         <div class="mb-3">
-                            <label for="disponibilidad" class="form-label fw-bold">Disponibilidad:</label>
-                            <input type="date" class="form-control" id="disponibilidad" name="disponibilidad">
+                            <label class="form-label fw-bold">Precio por Noche:</label>
+                            <input type="number" step="0.01" class="form-control" name="precio" value="<%= precioVal %>" placeholder="0.00" required>
                         </div>
-                        
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Estado Actual:</label>
+                            <select class="form-select" name="estado" required>
+                                <option value="Disponible" <%= "Disponible".equalsIgnoreCase(estadoVal)?"selected":"" %>>Disponible</option>
+                                <option value="Ocupado" <%= "Ocupado".equalsIgnoreCase(estadoVal)?"selected":"" %>>Ocupado</option>
+                                <option value="Mantenimiento" <%= "Mantenimiento".equalsIgnoreCase(estadoVal)?"selected":"" %>>Mantenimiento</option>
+                            </select>
+                        </div>
                     </div>
                     
-                    <!-- COLUMNA 2: BOTONES (USANDO D-GRID Y GAP-2, alineado con el de Cliente) -->
                     <div class="col-lg-4 botones-col">
-                        <!-- d-grid: Columna de botones. gap-2: Espaciado compacto. mx-auto: Centrado. -->
-                        <div class="d-grid gap-2 mx-auto"> 
-                            <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-custom-width">Guardar</button>
-                            <button type="submit" name="accion" value="eliminar" class="btn btn-secondary btn-custom-width">Eliminar</button>
-                            <button type="submit" name="accion" value="buscar" class="btn btn-secondary btn-custom-width">Buscar</button>
-                            <button type="button" onclick="window.location.reload();" class="btn btn-secondary btn-custom-width">Nuevo</button>
+                        <div class="d-grid gap-2 mx-auto" style="width: 100%;"> 
+                            <button type="submit" name="accion" value="guardar" class="btn btn-primary">Guardar</button>
+                            <button type="submit" name="accion" value="buscar" class="btn btn-info text-white" formnovalidate>Buscar</button>
+                            <button type="submit" name="accion" value="eliminar" class="btn btn-danger" onclick="return confirm('Â¿Eliminar habitaciÃ³n?');" formnovalidate>Eliminar</button>
                             
-                                   <!-- NUEVO BOTÓN DE REGRESO AL MENÚ -->
-                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary btn-custom-width">Regresar</button>
+                            <a href="NuevaHabitacion.jsp" class="btn btn-secondary">Limpiar</a>
+                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary">Regresar</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+        <div class="card-footer text-end text-muted py-2 bg-black rounded-bottom-3">
+            <small>Admin Habitaciones</small>
+        </div>
     </div>
     
-    <!-- JavaScript de BOOTSTRAP -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

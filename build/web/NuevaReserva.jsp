@@ -142,16 +142,15 @@
                 }
             %>
             
-             <!-- DETECTOR DE CLIENTE FANTASMA -->
-            <% if (!fueEliminado && reservaFound != null && clienteFound == null) { %>
+             <% if (!fueEliminado && reservaFound != null && clienteFound == null && reservaFound.getClienteNombre() == null) { %>
                  <div class="alert alert-warning text-center small">
-                    <strong>⚠ ATENCIÓN:</strong> Reserva encontrada, pero el Cliente no está registrado. Complete los datos abajo.
+                     <strong>⚠ ATENCIÓN:</strong> Datos del cliente no encontrados. Complete los campos manualmante.
                 </div>
             <% } %>
+
              <form action="ReservaServlet" method="post">
                 <div class="row g-4">
                     
-                    <!-- IZQUIERDA: RESERVA -->
                     <div class="col-lg-7">
                         <h4 class="text-white border-bottom border-secondary pb-2 mb-3">Fechas de Reserva</h4>
                         <div class="row g-3 mb-4">
@@ -188,9 +187,14 @@
                                 <label class="form-label fw-bold">Número de Huéspedes:</label>
                                 <input type="number" class="form-control" name="numHuespedes" min="1" value="<%= numHuespedesVal %>" required>
                             </div>
+                            
                             <div class="col-12">
                                 <label class="form-label fw-bold">Habitación Asignada:</label>
-                                <input type="text" class="form-control" name="habitacionAsignada" value="<%= habAsignadaVal %>" placeholder="Ej: 101">
+                                <input type="text" class="form-control text-info fw-bold" 
+                                       name="habitacionAsignada" 
+                                       value="<%= (habAsignadaVal == null || habAsignadaVal.isEmpty()) ? "Asignación Automática al Reservar" : habAsignadaVal %>" 
+                                       readonly>
+                                <small class="text-secondary">El sistema buscará una habitación disponible automáticamente.</small>
                             </div>
                         </div>
 
@@ -215,29 +219,26 @@
                         </div>
                     </div>
                     
-                    <!-- DERECHA: HUÉSPED -->
                     <div class="col-lg-5 border-start border-secondary ps-lg-4">
                         
                         <h4 class="text-white border-bottom border-secondary pb-2 mb-3">Datos del Huésped</h4>
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold text-warning">Cédula:</label>
-                            <input type="text" class="form-control border-warning" id="cedula" name="cedula" value="<%= cedulaVal %>" required placeholder="Buscar o Nueva Cédula">
+                            <input type="text" class="form-control border-warning" id="cedula" name="cedula" value="<%= cedulaVal %>" required placeholder="Ingrese Cédula y presione Buscar">
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold">Nombre:</label>
-                            <!-- CORREGIDO: value asociado a nombreVal (getNombres) -->
-                            <input type="text" class="form-control" name="nombres" value="<%= nombreVal %>" placeholder="Nombre">
+                            <input type="text" class="form-control" name="nombre" value="<%= nombreVal %>" placeholder="Nombre del cliente" required>
                         </div>
                          <div class="mb-3">
                             <label class="form-label fw-bold">Apellido:</label>
-                            <!-- CORREGIDO: value asociado a apellidoVal (getApellidos) -->
-                            <input type="text" class="form-control" name="apellidos" value="<%= apellidoVal %>" placeholder="Apellido">
+                            <input type="text" class="form-control" name="apellido" value="<%= apellidoVal %>" placeholder="Apellido del cliente" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Teléfono:</label>
-                            <input type="text" class="form-control" name="telefono" value="<%= telefonoVal %>" placeholder="Teléfono">
+                            <input type="text" class="form-control" name="telefono" value="<%= telefonoVal %>" placeholder="Teléfono de contacto" required>
                         </div>
                         
                         <div class="botones-crud mt-4"> 
@@ -246,7 +247,7 @@
                                 <button type="submit" name="accion" value="Buscar" class="btn btn-info flex-fill text-white" formnovalidate>Buscar</button>
                                 <button type="submit" name="accion" value="Eliminar" class="btn btn-danger flex-fill" onclick="return confirm('¿Seguro que desea eliminar esta reserva?');" formnovalidate>Eliminar</button>
                             </div>
-                            <a href="NuevaReserva.jsp" class="btn btn-secondary mt-2 text-decoration-none">Nuevo / Limpiar Campos</a>
+                            <a href="NuevaReserva.jsp" class="btn btn-secondary mt-2 text-decoration-none text-center">Nuevo / Limpiar Campos</a>
                             <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary mt-2 btn-custom-width" style="width: 100%">Regresar</button>
                         </div>
                         

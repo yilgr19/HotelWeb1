@@ -12,11 +12,17 @@ public class Reserva {
     private String metodoPago;
     private String estadoReserva;
     private String clienteCedula;
+    
+    // NUEVOS CAMPOS (Esto es lo que te falta)
+    private String clienteNombre;
+    private String clienteApellido;
+    private String clienteTelefono;
 
     // Constructor para Registrar (Sin ID)
     public Reserva(String fechaEntrada, String horaEntrada, String fechaSalida, String horaSalida, 
                    String tipoHabitacion, int numHuespedes, String habitacionAsignada, 
-                   String metodoPago, String estadoReserva, String clienteCedula) {
+                   String metodoPago, String estadoReserva, String clienteCedula,
+                   String clienteNombre, String clienteApellido, String clienteTelefono) {
         this.fechaEntrada = fechaEntrada;
         this.horaEntrada = horaEntrada;
         this.fechaSalida = fechaSalida;
@@ -27,12 +33,16 @@ public class Reserva {
         this.metodoPago = metodoPago;
         this.estadoReserva = estadoReserva;
         this.clienteCedula = clienteCedula;
+        this.clienteNombre = clienteNombre;
+        this.clienteApellido = clienteApellido;
+        this.clienteTelefono = clienteTelefono;
     }
 
     // Constructor para Leer (Con ID)
     public Reserva(int idReserva, String fechaEntrada, String horaEntrada, String fechaSalida, String horaSalida, 
                    String tipoHabitacion, int numHuespedes, String habitacionAsignada, 
-                   String metodoPago, String estadoReserva, String clienteCedula) {
+                   String metodoPago, String estadoReserva, String clienteCedula,
+                   String clienteNombre, String clienteApellido, String clienteTelefono) {
         this.idReserva = idReserva;
         this.fechaEntrada = fechaEntrada;
         this.horaEntrada = horaEntrada;
@@ -44,11 +54,14 @@ public class Reserva {
         this.metodoPago = metodoPago;
         this.estadoReserva = estadoReserva;
         this.clienteCedula = clienteCedula;
+        this.clienteNombre = clienteNombre;
+        this.clienteApellido = clienteApellido;
+        this.clienteTelefono = clienteTelefono;
     }
 
     public Reserva() {}
 
-    // Getters y Setters
+    // Getters y Setters antiguos
     public int getIdReserva() { return idReserva; }
     public void setIdReserva(int idReserva) { this.idReserva = idReserva; }
     public String getFechaEntrada() { return fechaEntrada; }
@@ -71,4 +84,14 @@ public class Reserva {
     public void setEstadoReserva(String estadoReserva) { this.estadoReserva = estadoReserva; }
     public String getCedulaCliente() { return clienteCedula; }
     public void setCedulaCliente(String clienteCedula) { this.clienteCedula = clienteCedula; }
+
+    // NUEVOS GETTERS Y SETTERS
+    public String getClienteNombre() { return clienteNombre; }
+    public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
+    
+    public String getClienteApellido() { return clienteApellido; }
+    public void setClienteApellido(String clienteApellido) { this.clienteApellido = clienteApellido; }
+    
+    public String getClienteTelefono() { return clienteTelefono; }
+    public void setClienteTelefono(String clienteTelefono) { this.clienteTelefono = clienteTelefono; }
 }

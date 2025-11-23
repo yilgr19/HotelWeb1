@@ -6,27 +6,31 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CheckinDAO {
 
+    // 1. BUSCAR DATOS (Para hacer Check-in)
     public Checkin buscarDatosPorCedula(String cedula) {
         Checkin datos = null;
-        
-        // Buscamos datos de la reserva y el precio de la habitación
-        String sql = "SELECT r.*, h.precio " +
+        String sql = "SELECT r.*, COALESCE(h.precio, 0) as precio_hab " +
                      "FROM reserva r " +
-                     "JOIN habitaciones h ON r.habitacion_asignada = h.numero " +
-                     "WHERE r.cliente_cedula = ? AND r.estado_reserva = 'Confirmada' " +
+                     "LEFT JOIN habitaciones h ON r.habitacion_asignada = h.numero " +
+                     "WHERE r.cliente_cedula = ? " +
                      "ORDER BY r.idReserva DESC LIMIT 1";
 
         try (Connection con = ConexionBD.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, cedula);
             
+            ps.setString(1, cedula);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     datos = new Checkin();
-                    // Usamos SETTERS porque las variables son privadas
+                    datos.setIdCheckin(0); 
+                    
                     datos.setFechaEntrada(rs.getString("fecha_entrada"));
                     datos.setFechaSalida(rs.getString("fecha_salida"));
                     datos.setNumHabitacion(rs.getString("habitacion_asignada"));
@@ -35,42 +39,34 @@ public class CheckinDAO {
                     datos.setClienteNombre(rs.getString("cliente_nombre"));
                     datos.setClienteApellido(rs.getString("cliente_apellido"));
                     datos.setClienteTelefono(rs.getString("cliente_telefono"));
-                    
-                    // CORRECCIÓN DEL ERROR DE LA FOTO 1:
-                    // En lugar de datos.idCheckin = 0; usamos:
-                    datos.setIdCheckin(0); 
-                    
-                    // CORRECCIÓN DEL CONSTRUCTOR (Debe tener 15 parámetros en orden)
+                    datos.setPrecioNoche(rs.getDouble("precio_hab"));
+
                     return new Checkin(
-                        rs.getString("fecha_entrada"), // 1
-                        "14:00",                       // 2 (Hora entrada default)
-                        rs.getString("fecha_salida"),  // 3
-                        "12:00",                       // 4 (Hora salida default)
-                        "",                            // 5 (Tiempo estadía, se calcula después)
-                        rs.getString("habitacion_asignada"), // 6
-                        rs.getString("tipo_habitacion"),     // 7
-                        rs.getDouble("precio"),        // 8 (Precio Noche)
-                        0.0,                           // 9 (Total, se calcula después)
-                        "Pendiente",                   // 10
-                        rs.getString("cliente_cedula"),   // 11
-                        rs.getString("cliente_nombre"),   // 12
-                        rs.getString("cliente_apellido"), // 13
-                        rs.getString("cliente_telefono"), // 14
-                        ""                                // 15 (Observaciones vacías)
+                        rs.getString("fecha_entrada"), "14:00",
+                        rs.getString("fecha_salida"), "12:00",
+                        "", 
+                        rs.getString("habitacion_asignada"),
+                        rs.getString("tipo_habitacion"),
+                        rs.getDouble("precio_hab"), 0.0, 
+                        "Pendiente",
+                        rs.getString("cliente_cedula"),
+                        rs.getString("cliente_nombre"),
+                        rs.getString("cliente_apellido"),
+                        rs.getString("cliente_telefono"),
+                        ""
                     );
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         return datos;
     }
 
+    // 2. REGISTRAR NUEVO CHECK-IN
     public boolean registrarCheckin(Checkin c) {
         String sql = "INSERT INTO checkin (fecha_entrada, hora_entrada, fecha_salida, hora_salida, tiempo_estadia, " +
                      "num_habitacion, tipo_habitacion, precio_noche, costo_total, estado_pago, " +
-                     "cliente_cedula, cliente_nombre, cliente_apellido, cliente_telefono, observaciones) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "cliente_cedula, cliente_nombre, cliente_apellido, cliente_telefono, observaciones, estado_checkin) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Activo')";
         
         try (Connection con = ConexionBD.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -91,11 +87,113 @@ public class CheckinDAO {
             ps.setString(14, c.getClienteTelefono());
             ps.setString(15, c.getObservaciones());
 
-            return ps.executeUpdate() > 0;
+            // Marcar habitación como Ocupada
+            int filas = ps.executeUpdate();
+            if(filas > 0) {
+                new HabitacionDAO().cambiarEstadoHabitacion(c.getNumHabitacion(), "Ocupado");
+            }
+            return filas > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    // 3. LISTAR SOLO ACTIVOS (Para Check-out)
+    public List<Checkin> listarCheckinsActivos() {
+        List<Checkin> lista = new ArrayList<>();
+        String sql = "SELECT * FROM checkin WHERE estado_checkin = 'Activo' ORDER BY id_checkin DESC";
+        
+        try (Connection con = ConexionBD.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                Checkin c = new Checkin();
+                c.setIdCheckin(rs.getInt("id_checkin"));
+                c.setNumHabitacion(rs.getString("num_habitacion"));
+                c.setClienteNombre(rs.getString("cliente_nombre"));
+                c.setClienteApellido(rs.getString("cliente_apellido"));
+                c.setFechaEntrada(rs.getString("fecha_entrada"));
+                c.setFechaSalida(rs.getString("fecha_salida"));
+                c.setCostoTotal(rs.getDouble("costo_total"));
+                c.setEstadoPago(rs.getString("estado_pago"));
+                lista.add(c);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return lista;
+    }
+
+    // 4. REALIZAR CHECK-OUT (Finalizar)
+    public boolean finalizarCheckin(int idCheckin, String numHabitacion) {
+        String fechaHoy = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        
+        String sqlUpdate = "UPDATE checkin SET estado_checkin = 'Finalizado', estado_pago = 'Pagado', fecha_salida_real = ? WHERE id_checkin = ?";
+        String sqlLiberar = "UPDATE habitaciones SET estado = 'Disponible' WHERE numero = ?";
+        
+        Connection con = null;
+        try {
+            con = ConexionBD.getConnection();
+            con.setAutoCommit(false); 
+
+            try (PreparedStatement ps1 = con.prepareStatement(sqlUpdate)) {
+                ps1.setString(1, fechaHoy);
+                ps1.setInt(2, idCheckin);
+                ps1.executeUpdate();
+            }
+
+            try (PreparedStatement ps2 = con.prepareStatement(sqlLiberar)) {
+                ps2.setString(1, numHabitacion);
+                ps2.executeUpdate();
+            }
+
+            con.commit();
+            return true;
+        } catch (SQLException e) {
+            try { if(con!=null) con.rollback(); } catch(SQLException ex){}
+            e.printStackTrace();
+            return false;
+        } finally {
+            try { if(con!=null) con.setAutoCommit(true); con.close(); } catch(SQLException ex){}
+        }
+    }
+    
+    // 5. LISTAR HISTORIAL COMPLETO (Para Reporte ConsultarCheckin.jsp)
+    public List<Checkin> listarHistorialCheckins() {
+        List<Checkin> lista = new ArrayList<>();
+        String sql = "SELECT * FROM checkin ORDER BY id_checkin DESC";
+        
+        try (Connection con = ConexionBD.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                Checkin c = new Checkin();
+                c.setIdCheckin(rs.getInt("id_checkin"));
+                c.setNumHabitacion(rs.getString("num_habitacion"));
+                c.setTipoHabitacion(rs.getString("tipo_habitacion"));
+                c.setClienteCedula(rs.getString("cliente_cedula"));
+                c.setClienteNombre(rs.getString("cliente_nombre"));
+                c.setClienteApellido(rs.getString("cliente_apellido"));
+                c.setFechaEntrada(rs.getString("fecha_entrada"));
+                c.setFechaSalida(rs.getString("fecha_salida")); 
+                
+                String real = rs.getString("fecha_salida_real");
+                c.setObservaciones((real != null && !real.isEmpty()) ? real : "---"); 
+                
+                c.setCostoTotal(rs.getDouble("costo_total"));
+                c.setEstadoPago(rs.getString("estado_pago"));
+                
+                try { 
+                    String estado = rs.getString("estado_checkin");
+                    if(estado != null) c.setTiempoEstadia(estado); 
+                    else c.setTiempoEstadia("Activo");
+                } catch (Exception e) { c.setTiempoEstadia("Activo"); }
+
+                lista.add(c);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return lista;
     }
 }

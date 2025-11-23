@@ -153,7 +153,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownCheckin">
                             <li><a class="dropdown-item" href="NuevoCheckin.jsp">Nuevo Check-in</a></li>
-                            <li><a class="dropdown-item" href="ConsultarCheckin.jsp">Consultar Check-ins</a></li>
+                            <li><a class="dropdown-item" href="ConsultarCheckinServlet">Consultar Check-ins</a></li>
                         </ul>
                     </li>
 

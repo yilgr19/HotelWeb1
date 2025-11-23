@@ -92,4 +92,36 @@ public class ReservaDAO {
             return ps.executeUpdate() > 0;
         }
     }
+    public java.util.List<Reserva> listarReservas() {
+        java.util.List<Reserva> lista = new java.util.ArrayList<>();
+        String sql = "SELECT * FROM reserva ORDER BY idReserva DESC"; // Las más recientes primero
+        
+        try (Connection con = ConexionBD.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                Reserva r = new Reserva(
+                    rs.getInt("idReserva"),
+                    rs.getString("fecha_entrada"),
+                    rs.getString("hora_entrada"),
+                    rs.getString("fecha_salida"),
+                    rs.getString("hora_salida"),
+                    rs.getString("tipo_habitacion"),
+                    rs.getInt("num_huespedes"),
+                    rs.getString("habitacion_asignada"),
+                    rs.getString("metodo_pago"),
+                    rs.getString("estado_reserva"),
+                    rs.getString("cliente_cedula"),
+                    rs.getString("cliente_nombre"),
+                    rs.getString("cliente_apellido"),
+                    rs.getString("cliente_telefono")
+                );
+                lista.add(r);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 }

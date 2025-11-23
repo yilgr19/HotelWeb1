@@ -142,7 +142,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownReservas">
                             <li><a class="dropdown-item" href="NuevaReserva.jsp">Reservar</a></li>
-                            <li><a class="dropdown-item" href="ConsultarReserva.jsp">Consultar Reservas</a></li>
+                            <li><a class="dropdown-item" href="ConsultarServlet">Consultar Reservas</a></li>
                         </ul>
                     </li>
                     

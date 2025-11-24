@@ -1,6 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="hotelweb.models.Usuario" %>
-<%@ page import="hotelweb.dao.UsuarioManager" %>
 <%@ page import="hotelweb.dao.ProductoDAO" %>
 <%@ page import="hotelweb.models.Categoria" %>
 <%@ page import="java.util.List" %>
@@ -52,6 +51,7 @@
             </div>
             
             <div class="form-body">
+              
                 <% 
                     String msj = (String) request.getAttribute("mensaje");
                     String err = (String) request.getAttribute("error");
@@ -121,7 +121,8 @@
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-custom">Guardar Producto</button>
+                                <button type="submit" name="accion" value="guardar" 
+                                class="btn btn-primary btn-custom">Guardar Producto</button>
                                 <button type="button" class="btn btn-secondary btn-custom" onclick="window.location.href='Menu.jsp'">Regresar</button>
                             </div>
                         </div>
@@ -137,8 +138,10 @@
             let base = parseFloat(document.getElementById('precioBase').value) || 0;
             let iva = parseFloat(document.getElementById('impuesto').value) || 0;
             let total = base + (base * (iva / 100));
-            document.getElementById('precioFinal').value = total.toLocaleString('es-CO');
+            // Usamos toLocaleString para formatear el número con separadores
+            document.getElementById('precioFinal').value = total.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
+        document.addEventListener('DOMContentLoaded', calcularTotal); // Calcula al cargar
     </script>
 </body>
 </html>

@@ -1,8 +1,10 @@
+// Ubicación: hotelweb.dao.ProductoDAO
+
 package hotelweb.dao;
 
 import hotelweb.models.Categoria;
-import hotelweb.models.Producto;
-import hotelweb.util.ConexionBD;
+import hotelweb.models.Producto; // Importamos Producto para el nuevo método
+import hotelweb.util.ConexionBD; // << Revisa que esta ruta sea correcta
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,51 +13,110 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductoDAO {
-
-    // 1. Método para llenar el combo box de categorías
-    public List<Categoria> obtenerCategorias() {
-        List<Categoria> lista = new ArrayList<>();
-        String sql = "SELECT * FROM categorias ORDER BY nombre";
+    
+    // ===================================================================
+    // MÉTODO 1: GUARDAR PRODUCTO (FALTABA EN EL CÓDIGO ANTERIOR)
+    // ===================================================================
+    public boolean guardarProducto(Producto producto) {
+        // La consulta INSERT debe coincidir con las columnas de tu tabla 'producto'
+        // CÓDIGO CORREGIDO:
+        String sql = "INSERT INTO productos (codigo, nombre, descripcion, id_categoria, precio, impuesto, existencia, fecha_vencimiento) " +
+             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
-        try (Connection con = ConexionBD.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-             
-            while(rs.next()){
-                lista.add(new Categoria(rs.getInt("id_categoria"), rs.getString("nombre")));
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        return lista;
-    }
+        Connection con = null;
+        PreparedStatement ps = null;
+        boolean guardado = false;
 
-    // 2. Método actualizado con nuevos campos
-    public boolean registrarProducto(Producto p) {
-        // Agregamos id_categoria y fecha_vencimiento al SQL
-        String sql = "INSERT INTO productos (codigo, nombre, descripcion, id_categoria, precio, impuesto, existencia, fecha_vencimiento) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (Connection con = ConexionBD.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try {
+            con = ConexionBD.getConnection(); 
+            ps = con.prepareStatement(sql);
             
-            ps.setString(1, p.getCodigo());
-            ps.setString(2, p.getNombre());
-            ps.setString(3, p.getDescripcion());
-            ps.setInt(4, p.getIdCategoria());      // NUEVO
-            ps.setDouble(5, p.getPrecio());
-            ps.setDouble(6, p.getImpuesto());
-            ps.setInt(7, p.getExistencia());
+            // Asignar parámetros
+            ps.setString(1, producto.getCodigo());
+            ps.setString(2, producto.getNombre());
+            ps.setString(3, producto.getDescripcion());
+            ps.setInt(4, producto.getIdCategoria());
+            ps.setDouble(5, producto.getPrecio());
+            ps.setDouble(6, producto.getImpuesto());
+            ps.setInt(7, producto.getExistencia());
             
-            // Si la fecha viene vacía, mandamos NULL a la base de datos
-            if (p.getFechaVencimiento() == null || p.getFechaVencimiento().isEmpty()) {
-                ps.setNull(8, java.sql.Types.DATE);
+            // Manejar la fecha opcional (puede ser NULL)
+            if (producto.getFechaVencimiento() != null) {
+                ps.setDate(8, producto.getFechaVencimiento());
             } else {
-                ps.setString(8, p.getFechaVencimiento()); // NUEVO
+                ps.setNull(8, java.sql.Types.DATE); 
             }
-            
-            return ps.executeUpdate() > 0;
+
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                guardado = true;
+            }
             
         } catch (SQLException e) {
+            System.err.println("--- ERROR AL GUARDAR PRODUCTO ---");
+            System.err.println("Mensaje: " + e.getMessage());
             e.printStackTrace();
-            return false;
+        } finally {
+            // Cierre seguro de recursos
+            try {
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException ex) {
+                System.err.println("Error al cerrar recursos: " + ex.getMessage());
+            }
         }
+        return guardado;
+    }
+
+    // ===================================================================
+    // MÉTODO 2: OBTENER CATEGORÍAS (CORRECCIÓN A 'categorias')
+    // ===================================================================
+    public List<Categoria> obtenerCategorias() {
+        List<Categoria> lista = new ArrayList<>();
+        
+        // --- CORRECCIÓN APLICADA: 'categoria' se cambió a 'categorias' ---
+        String sql = "SELECT id_categoria, nombre FROM categorias ORDER BY nombre"; 
+        // -------------------------------------------------------------------
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        System.out.println("--- INTENTANDO CARGAR CATEGORÍAS ---");
+        
+        try {
+            con = ConexionBD.getConnection(); 
+            System.out.println("Conexión obtenida correctamente.");
+            
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            int contador = 0;
+            while (rs.next()) {
+                Categoria c = new Categoria();
+                c.setIdCategoria(rs.getInt("id_categoria"));
+                c.setNombre(rs.getString("nombre"));
+                lista.add(c);
+                contador++;
+            }
+            
+            System.out.println("Categorías cargadas: " + contador);
+            
+        } catch (SQLException e) {
+            System.err.println("--- ERROR CRÍTICO AL OBTENER CATEGORÍAS ---");
+            System.err.println("Mensaje de Error SQL: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // Cierre seguro de recursos
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException ex) {
+                System.err.println("Error al cerrar recursos: " + ex.getMessage());
+            }
+        }
+        return lista;
     }
 }

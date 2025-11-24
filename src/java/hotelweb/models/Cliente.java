@@ -2,20 +2,19 @@ package hotelweb.models;
 
 public class Cliente {
 
-    // Atributos (Ahora coinciden con tu tabla y formulario)
+    // Atributos
     private int idCliente;
-    private String cedula; // antes dni
+    private String cedula;
     private String nombre;
     private String apellido;
     private String telefono;
-    private String direccion; // <-- ¡NUEVO!
-    private String correo;    // antes email
+    private String direccion;
+    private String correo;
 
     // --- CONSTRUCTORES ---
     
     /**
      * Constructor para REGISTRAR (sin ID)
-     * (Usado por el Servlet)
      */
     public Cliente(String cedula, String nombre, String apellido, String telefono, String direccion, String correo) {
         this.cedula = cedula;
@@ -28,8 +27,6 @@ public class Cliente {
     
     /**
      * Constructor para LEER (con ID)
-     * (Usado por el DAO en 'buscarPorCedula')
-     * (Este arregla tu error de la línea 57)
      */
     public Cliente(int idCliente, String cedula, String nombre, String apellido, String telefono, String direccion, String correo) {
         this.idCliente = idCliente;
@@ -42,12 +39,11 @@ public class Cliente {
     }
     
     /**
-     * Constructor vacío (útil para el JSP)
+     * Constructor vacío
      */
     public Cliente() {}
 
     // --- GETTERS Y SETTERS ---
-    // (Estos arreglan tus errores de las líneas 27, 31 y 32)
     
     public int getIdCliente() { return idCliente; }
     public void setIdCliente(int idCliente) { this.idCliente = idCliente; }

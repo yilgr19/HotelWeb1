@@ -28,234 +28,241 @@
         
         <% String err = (String) request.getAttribute("error"); 
            if(err!=null) out.print("<div class='alert alert-danger'>"+err+"</div>"); %>
-
-        <form action="VentaServlet" method="post" id="formVenta">
-            <div class="card bg-dark text-white border-secondary mb-3">
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label>Factura N°</label>
-                            <input type="text" class="form-control text-warning fw-bold" name="numFactura" value="<%= proxFactura %>" readonly>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Cédula Cliente</label>
-                            <input type="text" id="txtCedula" class="form-control" name="cedula" placeholder="Cédula/ID Cliente" required onchange="buscarClientePorCedula()">
-                        </div>
-                        <div class="col-md-3">
-                            <label>Nombre Cliente</label>
-                            <input type="text" id="txtNombreCliente" class="form-control" name="nombre" placeholder="Nombre completo" required>
-                        </div>
-                         <div class="col-md-3">
-                            <label>Método Pago</label>
-                            <select class="form-select" name="metodoPago">
-                                <option>Efectivo</option>
-                                <option>Tarjeta</option>
-                                <option>Transferencia</option>
-                            </select>
-                        </div>
-                    </div>
+        
+        <form id="formVenta" action="VentaServlet" method="POST">
+            <div class="row mb-4 bg-dark p-3 rounded">
+                <div class="col-md-3">
+                    <label for="numFactura" class="form-label">Factura No:</label>
+                    <input type="text" id="numFactura" name="numFactura" class="form-control" value="<%= proxFactura %>" readonly>
                 </div>
-            </div>
-
-            <div class="card bg-secondary bg-opacity-10 border-secondary mb-3">
-                <div class="card-body">
-                    <div class="row align-items-end">
-                        <div class="col-md-4">
-                            <label>Código Producto</label>
-                            <input type="text" id="txtCodigo" class="form-control" placeholder="Escanea o escribe" autofocus>
-                        </div>
-                         <div class="col-md-4">
-                            <label>Nombre / Precio / Impuesto</label>
-                            <input type="text" id="txtDisplayInfo" class="form-control" readonly placeholder="Se cargan automáticamete al buscar">
-                        </div>
-                        <div class="col-md-2">
-                            <label>Cant. a Vender</label>
-                            <input type="number" id="txtCantidad" class="form-control" value="1" min="1">
-                        </div>
-                        
-                        <input type="hidden" id="precioUnitarioBase" value="0.0">
-                        <input type="hidden" id="porcentajeImpuesto" value="0.0">
-                        <input type="hidden" id="stockDisponible" value="0"> 
-
-                         <div class="col-md-2">
-                            <label>&nbsp;</label>
-                            <button type="button" class="btn btn-success w-100" onclick="buscarProductoYAgregar()">
-                                + Agregar
-                            </button>
-                        </div>
+                
+                <div class="col-md-5">
+                    <label for="txtCedulaCliente" class="form-label">Cédula del Cliente (Buscar):</label>
+                    <div class="input-group">
+                        <input type="text" id="txtCedulaCliente" name="cedulaCliente" class="form-control" required onblur="buscarCliente()" onkeyup="if(event.keyCode==13){ event.preventDefault(); buscarCliente(); }">
+                        <button type="button" class="btn btn-outline-light" onclick="buscarCliente()">🔍</button>
                     </div>
+                    <small id="clienteFeedback" class="text-warning"></small>
                 </div>
-            </div>
-
-            <table class="table table-dark table-hover border text-center">
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Producto</th>
-                        <th>Cant.</th>
-                        <th>Precio Unit. (Base)</th>
-                        <th>Subtotal (con IVA)</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="cuerpoTabla">
-                    </tbody>
-            </table>
-
-            <div class="row justify-content-end">
+                
                 <div class="col-md-4">
-                    <div class="input-group mb-2">
-                        <span class="input-group-text bg-dark text-white border-secondary">Subtotal (Base):</span>
-                        <input type="text" class="form-control bg-dark text-white border-secondary text-end" id="subtotal" name="subtotal" value="0.00" readonly>
-                    </div>
-                    <div class="input-group mb-2">
-                        <span class="input-group-text bg-dark text-white border-secondary">Total IVA:</span>
-                        <input type="text" class="form-control bg-dark text-white border-secondary text-end" id="ivaTotal" name="ivaTotal" value="0.00" readonly>
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text bg-success text-white border-success fw-bold">TOTAL PAGAR:</span>
-                        <input type="text" class="form-control bg-dark text-success border-success text-end fw-bold fs-4" id="total" name="total" value="0.00" readonly>
-                    </div>
-                    
-                    <button type="submit" name="accion" value="guardar_venta" class="btn btn-primary w-100 btn-lg">
-                        GUARDAR Y GENERAR FACTURA
-                    </button>
-                    <a href="Menu.jsp" class="btn btn-secondary w-100 mt-2">Cancelar</a>
+                    <label for="txtNombreCliente" class="form-label">Nombre del Cliente:</label>
+                    <input type="text" id="txtNombreCliente" name="nombreCliente" class="form-control" readonly required>
+                </div>
+                
+                <input type="hidden" id="txtTelefonoCliente" name="telefonoCliente">
+                <input type="hidden" id="txtDireccionCliente" name="direccionCliente">
+                <input type="hidden" id="txtCorreoCliente" name="correoCliente">
+            </div>
+
+            <div class="row mb-4 bg-dark p-3 rounded">
+                <div class="col-md-3">
+                    <label for="txtCodigo" class="form-label">Código Producto (Buscar):</label>
+                    <input type="text" id="txtCodigo" class="form-control" onkeyup="if(event.keyCode==13){ event.preventDefault(); buscarProducto(); }">
+                </div>
+                <div class="col-md-3">
+                    <label for="txtCantidad" class="form-label">Cantidad:</label>
+                    <input type="number" id="txtCantidad" class="form-control" value="1" min="1" onkeyup="if(event.keyCode==13){ event.preventDefault(); agregarProducto(); }">
+                </div>
+                <div class="col-md-4">
+                    <label for="txtDisplayInfo" class="form-label">Info Producto:</label>
+                    <input type="text" id="txtDisplayInfo" class="form-control" readonly placeholder="Nombre, Precio, Stock">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-success w-100" onclick="agregarProducto()">➕ Agregar</button>
+                </div>
+            </div>
+
+            <div class="table-responsive mb-4">
+                <table class="table table-dark table-striped">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario (IVA Incl.)</th>
+                            <th>Subtotal (IVA Incl.)</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="row bg-dark p-3 rounded align-items-end">
+                <div class="col-md-3">
+                    <label for="metodoPago" class="form-label">Método de Pago:</label>
+                    <select id="metodoPago" name="metodoPago" class="form-select" required>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="TarjetaCredito">Tarjeta Crédito</option>
+                        <option value="TarjetaDebito">Tarjeta Débito</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="subtotal" class="form-label">Subtotal (SIN IVA):</label>
+                    <input type="text" id="subtotal" name="subtotal" class="form-control" value="0.00" readonly>
+                </div>
+                <div class="col-md-2">
+                    <label for="ivaTotal" class="form-label">IVA Total:</label>
+                    <input type="text" id="ivaTotal" name="ivaTotal" class="form-control" value="0.00" readonly>
+                </div>
+                <div class="col-md-2">
+                    <label for="total" class="form-label">TOTAL:</label>
+                    <input type="text" id="total" name="total" class="form-control fw-bold fs-5" value="0.00" readonly>
+                </div>
+
+                <div class="col-md-2 d-grid">
+                    <button type="submit" name="accion" value="registrar" class="btn btn-primary btn-lg">Registrar Venta</button>
                 </div>
             </div>
         </form>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const servletUrl = "VentaServlet";
-
-        // 🛑 FUNCIÓN NUEVA: Búsqueda de Cliente por Cédula (AJAX)
-        function buscarClientePorCedula() {
-            const cedula = document.getElementById("txtCedula").value.trim();
-            const nombreInput = document.getElementById("txtNombreCliente");
-
-            // 1. Limpiar y resetear el campo de nombre
-            nombreInput.value = "";
-            nombreInput.readOnly = false;
-            nombreInput.placeholder = "Nombre completo"; 
-
-            if (cedula.length < 5) {
-                return; 
-            }
+        
+        let productoSeleccionado = null; 
+        
+        function buscarCliente() {
+            let cedula = document.getElementById("txtCedulaCliente").value.trim();
+            let feedback = document.getElementById("clienteFeedback");
             
-            nombreInput.placeholder = "Buscando cliente...";
+            document.getElementById("txtNombreCliente").value = "";
+            feedback.innerHTML = ""; 
+            
+            if (cedula.length < 5) {
+                feedback.innerHTML = "Ingrese una cédula válida para buscar.";
+                return;
+            }
 
-            // 2. Petición AJAX al Servlet
-            fetch(servletUrl + "?accion=buscar_cliente_ajax&cedula=" + cedula)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+            fetch('VentaServlet?accion=buscarCliente&cedula=' + cedula)
+                .then(response => response.json())
                 .then(data => {
-                    if (data.found) {
-                        // 3. Cliente encontrado
-                        nombreInput.value = data.nombre;
-                        nombreInput.readOnly = true; // Bloquear edición
-                        nombreInput.placeholder = data.nombre;
-                        document.getElementById("txtCodigo").focus(); // Mover foco al producto
+                    if (data.encontrado) {
+                        document.getElementById("txtNombreCliente").value = data.nombre + " " + data.apellido;
+                        document.getElementById("txtTelefonoCliente").value = data.telefono;
+                        document.getElementById("txtDireccionCliente").value = data.direccion;
+                        document.getElementById("txtCorreoCliente").value = data.correo;
+                        feedback.innerHTML = "✅ Cliente encontrado: " + data.nombre + " " + data.apellido;
                     } else {
-                        // 4. Cliente NO encontrado
-                        alert("¡Cliente no registrado! ⚠️ Por favor, ingrese el nombre del cliente para registrar la venta a su nombre.");
-                        nombreInput.value = "";
-                        nombreInput.readOnly = false; // Permitir al usuario escribir el nombre
-                        nombreInput.placeholder = "Cliente no existe. Escriba el nombre completo.";
-                        nombreInput.focus();
+                        document.getElementById("txtNombreCliente").value = "CLIENTE NO ENCONTRADO";
+                        feedback.innerHTML = "❌ Cliente no registrado. Verifique la cédula o regístrelo.";
                     }
                 })
                 .catch(error => {
                     console.error('Error al buscar cliente:', error);
-                    alert("Error de conexión al buscar cliente.");
-                    nombreInput.readOnly = false;
-                    nombreInput.placeholder = "Error de conexión";
+                    feedback.innerHTML = "⚠️ Error de comunicación al buscar cliente.";
                 });
         }
         
-        // --- Funciones de Productos (Se mantienen con la validación de cliente) ---
-
-        function buscarProductoYAgregar() {
-            const cedula = document.getElementById("txtCedula").value.trim();
-            const nombre = document.getElementById("txtNombreCliente").value.trim();
-            
-            // 🛑 VALIDACIÓN ANTES DE AGREGAR PRODUCTOS
-            if (cedula === "" || nombre === "") {
-                alert("Primero debe ingresar la Cédula y Nombre del cliente (se validan automáticamente).");
-                document.getElementById("txtCedula").focus();
-                return;
-            }
-            
-            const codigo = document.getElementById("txtCodigo").value.trim();
-            const cantidad = parseInt(document.getElementById("txtCantidad").value || '0');
+        function buscarProducto() {
+            let codigo = document.getElementById("txtCodigo").value.trim();
+            document.getElementById("txtDisplayInfo").value = "Buscando...";
+            productoSeleccionado = null;
 
             if (codigo === "") {
-                alert("Ingrese el código del producto.");
-                document.getElementById("txtCodigo").focus();
-                return;
-            }
-            if (cantidad <= 0 || isNaN(cantidad)) {
-                alert("Ingrese una cantidad válida.");
-                document.getElementById("txtCantidad").focus();
+                document.getElementById("txtDisplayInfo").value = "";
                 return;
             }
             
-            document.getElementById("txtDisplayInfo").value = "Buscando...";
-            
-            fetch(servletUrl + "?accion=buscar_producto_ajax&codigo=" + codigo)
-                .then(response => {
-                    if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
-                    return response.json();
-                })
+            fetch('VentaServlet?accion=buscarProducto&codigo=' + codigo)
+                .then(response => response.json())
                 .then(data => {
-                    if (data.error) {
-                        alert("Error: " + data.error);
-                        document.getElementById("txtDisplayInfo").value = "Error al buscar";
-                    } else if (data.existencia < cantidad) {
-                         alert(`Error: Stock insuficiente. Existencia actual: ${data.existencia}.`);
-                         document.getElementById("txtDisplayInfo").value = `Stock: ${data.existencia} (Insuficiente)`;
+                    if (data.encontrado) {
+                        productoSeleccionado = data; 
+                        document.getElementById("txtDisplayInfo").value = 
+                            `${data.nombre} | P.Final: $${data.precioFinal.toFixed(2)} | Stock: ${data.existencia}`;
+                        document.getElementById("txtCantidad").focus();
                     } else {
-                        agregarProductoTabla(data.codigo, data.nombre, data.precio, data.impuesto, cantidad);
-                        document.getElementById("txtDisplayInfo").value = `OK: ${data.nombre} ($${data.precio.toFixed(2)} + ${data.impuesto}%)`;
+                        document.getElementById("txtDisplayInfo").value = "❌ Producto no encontrado. Revise código y DB.";
+                        document.getElementById("txtCodigo").focus();
                     }
                 })
                 .catch(error => {
                     console.error('Error al buscar producto:', error);
-                    alert("Error de conexión o servidor al buscar el producto.");
-                    document.getElementById("txtDisplayInfo").value = "Error de conexión";
+                    document.getElementById("txtDisplayInfo").value = "⚠️ Error de comunicación. Revisar logs del servidor.";
                 });
         }
 
-        function agregarProductoTabla(codigo, nombre, precio, impuesto, cantidad) {
+        function agregarProducto() {
+            if (!productoSeleccionado) {
+                alert("Primero debe buscar y seleccionar un producto válido.");
+                return;
+            }
             
-            const precioBaseUnitario = precio; 
-            const impuestoUnitario = precioBaseUnitario * (impuesto / 100.0);
-            const precioTotalUnitario = precioBaseUnitario + impuestoUnitario;
+            if (document.getElementById("txtNombreCliente").value.trim() === "" || document.getElementById("txtNombreCliente").value.includes("NO ENCONTRADO")) {
+                 alert("Por favor, busque y valide la cédula del cliente primero.");
+                 document.getElementById("txtCedulaCliente").focus();
+                 return;
+            }
+
+            let codigo = document.getElementById("txtCodigo").value.trim();
+            let cantidadInput = document.getElementById("txtCantidad");
+            let cantidad = parseInt(cantidadInput.value);
+
+            if (isNaN(cantidad) || cantidad <= 0) {
+                alert("La cantidad debe ser un número positivo.");
+                cantidadInput.focus();
+                return;
+            }
             
-            const subtotalConIva = precioTotalUnitario * cantidad;
-            const subtotalIvaMonto = impuestoUnitario * cantidad;
-            const subtotalBaseMonto = precioBaseUnitario * cantidad;
+            if (cantidad > productoSeleccionado.existencia) {
+                alert(`⚠️ No hay suficiente stock. Disponible: ${productoSeleccionado.existencia}`);
+                cantidadInput.focus();
+                return;
+            }
+            
+            // Revisa si el producto ya está en la tabla
+            let filasExistentes = document.getElementById("cuerpoTabla").rows;
+            for(let i=0; i < filasExistentes.length; i++){
+                let codExistente = filasExistentes[i].querySelector("input[name='tblCodigo']").value;
+                if(codExistente === codigo){
+                    alert("El producto ya está en la lista. Por favor, elimínelo y vuelva a agregarlo con la cantidad correcta.");
+                    return;
+                }
+            }
+            
+            // Cálculos
+            let subtotalConIva = cantidad * productoSeleccionado.precioFinal; 
+            let subtotalBase = cantidad * productoSeleccionado.precioBase; 
+            let ivaMonto = subtotalConIva - subtotalBase;
 
-            let fila = `<tr data-iva-monto='${subtotalIvaMonto.toFixed(2)}' data-base-monto='${subtotalBaseMonto.toFixed(2)}'>` +
-                "<td><input type='hidden' name='tblCodigo' value='"+codigo+"'>"+codigo+"</td>" +
-                "<td><input type='hidden' name='tblNombre' value='"+nombre+"'>"+nombre+"</td>" +
-                "<td><input type='hidden' name='tblCantidad' value='"+cantidad+"'>"+cantidad+"</td>" +
-                "<td><input type='hidden' name='tblPrecio' value='"+precioBaseUnitario.toFixed(2)+"'>"+precioBaseUnitario.toFixed(2)+"</td>" +
-                "<td><input type='hidden' name='tblSubtotal' value='"+subtotalConIva.toFixed(2)+"'>"+subtotalConIva.toFixed(2)+"</td>" +
-                "<td><button type='button' class='btn btn-danger btn-sm' onclick='eliminarFila(this)'>X</button></td>" +
-                "</tr>";
+            // Crear la nueva fila
+            let tabla = document.getElementById("cuerpoTabla");
+            let fila = tabla.insertRow();
+            
+            fila.setAttribute("data-base-monto", subtotalBase.toFixed(2));
+            fila.setAttribute("data-iva-monto", ivaMonto.toFixed(2));
+            
+            fila.innerHTML = `
+                <td>
+                    ${codigo}
+                    <input type="hidden" name="tblCodigo" value="${codigo}">
+                </td>
+                <td>
+                    ${productoSeleccionado.nombre}
+                    <input type="hidden" name="tblNombre" value="${productoSeleccionado.nombre}">
+                </td>
+                <td>
+                    ${cantidad}
+                    <input type="hidden" name="tblCantidad" value="${cantidad}">
+                </td>
+                <td>
+                    $${productoSeleccionado.precioFinal.toFixed(2)}
+                    <input type="hidden" name="tblPrecio" value="${productoSeleccionado.precioFinal.toFixed(2)}">
+                </td>
+                <td>
+                    $${subtotalConIva.toFixed(2)}
+                    <input type="hidden" name="tblSubtotal" value="${subtotalConIva.toFixed(2)}">
+                </td>
+                <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)">X</button></td>
+            `;
 
-            document.getElementById("cuerpoTabla").innerHTML += fila;
             calcularTotales();
-            
-            document.getElementById("txtCodigo").value = "";
-            document.getElementById("txtCantidad").value = "1";
-            document.getElementById("txtDisplayInfo").value = ""; 
-            document.getElementById("txtCodigo").focus(); 
+            limpiarCamposProducto();
         }
 
         function calcularTotales() {
@@ -265,18 +272,26 @@
             let subtotalBase = 0;
             
             for (let i = 0; i < filas.length; i++) {
-                let subtotalConIva = parseFloat(filas[i].querySelector("input[name='tblSubtotal']").value);
                 let ivaMonto = parseFloat(filas[i].getAttribute("data-iva-monto")); 
                 let baseMonto = parseFloat(filas[i].getAttribute("data-base-monto")); 
                 
-                totalGeneral += subtotalConIva;
                 totalIva += ivaMonto;
                 subtotalBase += baseMonto; 
             }
             
+            totalGeneral = subtotalBase + totalIva;
+
             document.getElementById("subtotal").value = subtotalBase.toFixed(2);
             document.getElementById("ivaTotal").value = totalIva.toFixed(2);
             document.getElementById("total").value = totalGeneral.toFixed(2);
+        }
+
+        function limpiarCamposProducto() {
+            productoSeleccionado = null;
+            document.getElementById("txtCodigo").value = "";
+            document.getElementById("txtCantidad").value = "1";
+            document.getElementById("txtDisplayInfo").value = ""; 
+            document.getElementById("txtCodigo").focus(); 
         }
 
         function eliminarFila(btn) {
@@ -286,6 +301,5 @@
         }
 
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

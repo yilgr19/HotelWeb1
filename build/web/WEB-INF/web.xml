@@ -31,6 +31,15 @@
         <url-pattern>/ClienteServlet</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>VentaServlet</servlet-name>
+        <servlet-class>hotelweb.controllers.VentaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VentaServlet</servlet-name>
+        <url-pattern>/VentaServlet</url-pattern>
+    </servlet-mapping>
+    
     
     <session-config>
         <session-timeout>30</session-timeout>

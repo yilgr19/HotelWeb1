@@ -119,4 +119,49 @@ public class ProductoDAO {
         }
         return lista;
     }
+    public Producto buscarProductoPorCodigo(String codigo) {
+    Producto producto = null;
+    String sql = "SELECT id_producto, codigo, nombre, descripcion, id_categoria, precio, impuesto, existencia, fecha_vencimiento " +
+                 "FROM productos WHERE codigo = ?";
+    
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    try {
+        con = ConexionBD.getConnection();
+        ps = con.prepareStatement(sql);
+        ps.setString(1, codigo);
+        rs = ps.executeQuery();
+
+        if (rs.next()) {
+            producto = new Producto();
+            producto.setIdProducto(rs.getInt("id_producto"));
+            producto.setCodigo(rs.getString("codigo"));
+            producto.setNombre(rs.getString("nombre"));
+            producto.setDescripcion(rs.getString("descripcion"));
+            producto.setIdCategoria(rs.getInt("id_categoria"));
+            producto.setPrecio(rs.getDouble("precio"));
+            producto.setImpuesto(rs.getDouble("impuesto"));
+            producto.setExistencia(rs.getInt("existencia"));
+            producto.setFechaVencimiento(rs.getDate("fecha_vencimiento"));
+        }
+
+    } catch (SQLException e) {
+        System.err.println("--- ERROR AL BUSCAR PRODUCTO ---");
+        System.err.println("Código buscado: " + codigo);
+        System.err.println("Mensaje: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (con != null) con.close();
+        } catch (SQLException ex) {
+            System.err.println("Error al cerrar recursos: " + ex.getMessage());
+        }
+    }
+    
+    return producto;
+ }
 }

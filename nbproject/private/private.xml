@@ -3,11 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/yilgr/OneDrive/Desktop/HotelWeb1/src/java/hotelweb/dao/VentaDAO.java</file>
-            <file>file:/C:/Users/yilgr/OneDrive/Desktop/HotelWeb1/src/java/hotelweb/controllers/ProductoServlet.java</file>
-            <file>file:/C:/Users/yilgr/OneDrive/Desktop/HotelWeb1/web/RegistrarProductos.jsp</file>
+            <file>file:/C:/Users/yilgr/OneDrive/Desktop/HotelWeb1/src/java/hotelweb/controllers/ProductoBuscarServlet.java</file>
+            <file>file:/C:/Users/yilgr/OneDrive/Desktop/HotelWeb1/web/NuevaVenta.jsp</file>
+            <file>file:/C:/Users/yilgr/OneDrive/Desktop/HotelWeb1/src/java/hotelweb/controllers/VentaServlet.java</file>
             <file>file:/C:/Users/yilgr/OneDrive/Desktop/HotelWeb1/src/java/hotelweb/dao/ProductoDAO.java</file>
-            <file>file:/C:/Users/yilgr/OneDrive/Desktop/HotelWeb1/src/java/hotelweb/models/DetalleVenta.java</file>
         </group>
     </open-files>
 </project-private>

@@ -61,18 +61,19 @@ public class UsuarioManager {
             case "GESTION_HABITACIONES":
             case "GESTION_USUARIOS":
             case "REPORTES":
+            case "REGISTRAR_PRODUCTOS":
                 return false; // Solo Administrador (ya cubierto arriba)
                 
             case "CHECKIN_CHECKOUT":
             case "RESERVAS":
             case "NUEVA_VENTA":
-            case "REGISTRAR_PRODUCTOS": 
                 return esRecepcionista(usuario); 
                 
             default:
                 return false;
         }
     }
+    
     /**
      * Revisa si un usuario tiene permiso para ver una página JSP específica.
      * @param usuario El objeto Usuario de la sesión.
@@ -95,16 +96,19 @@ public class UsuarioManager {
         if (rol.equals("Recepcion")) {
             
             // Lista blanca de páginas permitidas para Recepción
-            // (Basado en lo que me pediste)
             if (nombrePagina.equals("NuevoCliente.jsp")) return true;
             if (nombrePagina.equals("NuevaReserva.jsp")) return true;
-            if (nombrePagina.equals("ConsultarReserva.jsp")) return true; // Lo añadí por lógica
-            if (nombrePagina.equals("NuevoCheckin.jsp")) return true;   // Lo añadí por lógica
-            if (nombrePagina.equals("ConsultarCheckin.jsp")) return true; // Lo añadí por lógica
+            if (nombrePagina.equals("ConsultarReserva.jsp")) return true;
+            if (nombrePagina.equals("NuevoCheckin.jsp")) return true;
+            if (nombrePagina.equals("ConsultarCheckin.jsp")) return true;
             if (nombrePagina.equals("NuevaVenta.jsp")) return true;
-            
-            // Asegúrate de que también puedan ver el menú principal
-            if (nombrePagina.equals("Menu.jsp")) return true; // ¡¡Cambia "Menu.jsp" por tu página de menú!!
+            if (nombrePagina.equals("ConsultarVentas.jsp")) return true;
+            if (nombrePagina.equals("Menu.jsp")) return true;
+
+            // Páginas DENEGADAS para Recepción
+            if (nombrePagina.equals("NuevaHabitacion.jsp")) return false;
+            if (nombrePagina.equals("RegistrarProductos.jsp")) return false;
+            if (nombrePagina.equals("Reportes.jsp")) return false;
 
             // Si la página no está en la lista, se deniega el acceso.
             return false;

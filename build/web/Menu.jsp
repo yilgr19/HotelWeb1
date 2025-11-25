@@ -446,7 +446,7 @@
                     <!-- Reportes - SOLO ADMINISTRADOR -->
                     <% if (esAdministrador) { %>
                     <li class="nav-item">
-                        <a class="nav-link text-warning" href="#">Reportes</a>
+                        <a class="nav-link text-warning" href="ReportesServlet">Reportes</a>
                     </li>
                     <% } %>
                 </ul>
@@ -553,7 +553,7 @@
 
                 <!-- Tarjeta Reportes - SOLO ADMINISTRADOR -->
                 <% if (esAdministrador) { %>
-                <a href="#" class="tarjeta">
+                <a href="ReportesServlet" class="tarjeta">
                     <div class="tarjeta-icono">
                         <i class="fas fa-file-chart-line"></i>
                     </div>

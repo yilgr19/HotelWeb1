@@ -446,7 +446,7 @@
                     <!-- Reportes - SOLO ADMINISTRADOR -->
                     <% if (esAdministrador) { %>
                     <li class="nav-item">
-                        <a class="nav-link text-warning" href="ReportesServlet">Reportes</a>
+                        <a class="nav-link text-danger" href="ReportesServlet">Reportes</a>
                     </li>
                     <% } %>
                 </ul>

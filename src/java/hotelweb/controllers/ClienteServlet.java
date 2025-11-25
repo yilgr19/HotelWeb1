@@ -28,19 +28,15 @@ public class ClienteServlet extends HttpServlet {
 
         // 1. Identificamos la ACCIÓN que el usuario quiere hacer
         String accion = request.getParameter("accion");
-        if (accion == null) accion = ""; // Evitar error null
+        if (accion == null) accion = "";
 
         // 2. Creamos el "Trabajador" de base de datos
         ClienteDAO dao = new ClienteDAO();
         
-        // 3. Leemos la Cédula (la usamos en casi todas las acciones)
+        // 3. Leemos la Cédula
         String cedula = request.getParameter("cedula"); 
 
         try {
-            
-            // <-- ======================================================= -->
-            // <-- AQUÍ ES DONDE EMPIEZA EL CÓDIGO QUE TÚ PEGASTE (EL SWITCH) -->
-            // <-- ======================================================= -->
             
             switch (accion) {
                 
@@ -55,14 +51,24 @@ public class ClienteServlet extends HttpServlet {
                     // Creamos el "molde" (Cliente)
                     Cliente cliente = new Cliente(cedula, nombre, apellido, telefono, direccion, correo);
                     
-                    // (Lógica futura: aquí podrías revisar si el cliente ya existe
-                    // para llamar a 'dao.actualizarCliente(cliente)' en lugar de registrar)
-                    
-                    // Llamamos al DAO para que lo guarde
-                    dao.registrarCliente(cliente);
-                    
-                    // Enviamos un mensaje de éxito de vuelta al JSP
-                    request.setAttribute("mensaje", "¡Cliente " + nombre + " guardado con éxito!");
+                    // AQUÍ ESTÁ LA LÓGICA CLAVE:
+                    // Si el cliente ya existe, lo actualizamos
+                    // Si no existe, lo registramos
+                    if (dao.existeCliente(cedula)) {
+                        // El cliente ya existe, actualizar
+                        if (dao.actualizarCliente(cliente)) {
+                            request.setAttribute("mensaje", "¡Cliente " + nombre + " actualizado con éxito!");
+                        } else {
+                            request.setAttribute("error", "No se pudo actualizar el cliente.");
+                        }
+                    } else {
+                        // El cliente no existe, registrar
+                        if (dao.registrarCliente(cliente)) {
+                            request.setAttribute("mensaje", "¡Cliente " + nombre + " guardado con éxito!");
+                        } else {
+                            request.setAttribute("error", "No se pudo guardar el cliente.");
+                        }
+                    }
                     break;
 
                 case "buscar":
@@ -88,23 +94,15 @@ public class ClienteServlet extends HttpServlet {
                     break;
                     
                 default:
-                    // Si el botón no tiene un 'value' (ej. "guardar", "buscar", "eliminar")
                     request.setAttribute("error", "Acción desconocida.");
             }
             
-            // <-- ======================================================= -->
-            // <-- AQUÍ ES DONDE TERMINA EL BLOQUE 'try'                   -->
-            // <-- ======================================================= -->
-            
         } catch (SQLException e) {
-            // Si algo falla en la Base de Datos (ej. Cédula duplicada)
-            e.printStackTrace(); // Muestra el error en la consola de NetBeans
+            e.printStackTrace();
             request.setAttribute("error", "Error de Base de Datos: " + e.getMessage());
         }
 
-        // 4. Al final de TODO (sea éxito o error), SIEMPRE reenviamos
-        // de vuelta al formulario JSP.
-        // (El JSP usará los 'setAttribute' para mostrar los mensajes)
+        // Al final, reenviamos de vuelta al formulario JSP
         request.getRequestDispatcher("NuevoCliente.jsp").forward(request, response);
     }
 }

@@ -107,37 +107,54 @@
         <div class="table-responsive">
             <table class="table table-dark table-hover table-sm">
                 <thead>
-                    <tr>
-                        <th>ID Venta</th>
-                        <th>Factura</th>
-                        <th>Fecha</th>
-                        <th>Cédula Cliente</th>
-                        <th>Nombre Cliente</th>
-                        <th>Tipo Pago</th>
-                        <th>Total Venta</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
+    <tr>
+        <th>ID Venta</th>
+        <th>Factura</th>
+        <th>Fecha</th>
+        <th>Cédula Cliente</th>
+        <th>Nombre Cliente</th>
+        <th>Tipo Pago</th>
+        <th>Total Venta</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+    </tr>
+</thead>
                 <tbody>
-                    <% if (listaVentas != null && listaVentas.size() > 0) { %>
-                        <% for (Venta venta : listaVentas) { %>
-                            <tr>
-                                <td><%= venta.getIdVenta() %></td>
-                                <td><%= venta.getNumeroFactura() %></td>
-                                <td><%= venta.getFecha() %></td>
-                                <td><%= venta.getCedulaCliente() %></td>
-                                <td><%= venta.getNombreCliente() %></td>
-                                <td><%= venta.getMetodoPago() %></td>
-                                <td>$<%= String.format("%.2f", venta.getTotalVenta()) %></td>
-                                <td>
-                                    <a href="VentasController?action=anular&id=<%= venta.getIdVenta() %>" 
-                                       class="btn btn-sm btn-danger"
-                                       onclick="return confirm('¿Deseas anular esta venta?');">
-                                        Anular
-                                    </a>
-                                </td>
-                            </tr>
-                        <% } %>
+    <% if (listaVentas != null && listaVentas.size() > 0) { %>
+        <% for (Venta venta : listaVentas) { %>
+            <tr>
+                <td><%= venta.getIdVenta() %></td>
+                <td><%= venta.getNumeroFactura() %></td>
+                <td><%= venta.getFecha() %></td>
+                <td><%= venta.getCedulaCliente() %></td>
+                <td><%= venta.getNombreCliente() %></td>
+                <td><%= venta.getMetodoPago() %></td>
+                <td>$<%= String.format("%.2f", venta.getTotalVenta()) %></td>
+                <td>
+                    <% 
+                        String estado = venta.getEstado();
+                        String badgeClass = "badge-success";
+                        if (estado != null && estado.equals("Anulada")) {
+                            badgeClass = "badge-danger";
+                        } else {
+                            estado = "Activa";
+                        }
+                    %>
+                    <span class="badge <%= badgeClass %>"><%= estado %></span>
+                </td>
+                <td>
+                    <% if (estado.equals("Activa")) { %>
+                        <a href="VentasController?action=anular&id=<%= venta.getIdVenta() %>" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('¿Deseas anular esta venta?');">
+                            Anular
+                        </a>
+                    <% } else { %>
+                        <span class="text-muted">Anulada</span>
+                    <% } %>
+                </td>
+            </tr>
+        <% } %>
                     <% } else { %>
                         <tr>
                             <td colspan="8" class="text-center">No se encontraron ventas.</td>

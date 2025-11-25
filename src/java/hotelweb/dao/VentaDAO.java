@@ -85,8 +85,8 @@ public class VentaDAO {
      */
     public List<Venta> obtenerTodasLasVentas() {
         List<Venta> ventas = new ArrayList<>();
-        String sql = "SELECT id_venta, num_factura, fecha, cedula_cliente, nombre_cliente, metodo_pago, total_venta " +
-                     "FROM ventas ORDER BY fecha DESC";
+        String sql = "SELECT id_venta, num_factura, fecha, cedula_cliente, nombre_cliente, metodo_pago, total_venta, estado " +
+             "FROM ventas ORDER BY fecha DESC";
         
         Connection con = null;
         PreparedStatement ps = null;
@@ -106,6 +106,7 @@ public class VentaDAO {
                 venta.setNombreCliente(rs.getString("nombre_cliente"));
                 venta.setMetodoPago(rs.getString("metodo_pago"));
                 venta.setTotalVenta(rs.getDouble("total_venta"));
+                venta.setEstado(rs.getString("estado"));
                 
                 ventas.add(venta);
             }
@@ -131,8 +132,8 @@ public class VentaDAO {
      */
     public List<Venta> buscarVentasPorFecha(String fechaIni, String fechaFin) {
         List<Venta> ventas = new ArrayList<>();
-        String sql = "SELECT id_venta, num_factura, fecha, cedula_cliente, nombre_cliente, metodo_pago, total_venta " +
-                     "FROM ventas WHERE 1=1";
+        String sql = "SELECT id_venta, num_factura, fecha, cedula_cliente, nombre_cliente, metodo_pago, total_venta, estado " +
+             "FROM ventas WHERE 1=1";
         
         if (fechaIni != null && !fechaIni.isEmpty()) {
             sql += " AND fecha >= ?";
@@ -170,6 +171,7 @@ public class VentaDAO {
                 venta.setNombreCliente(rs.getString("nombre_cliente"));
                 venta.setMetodoPago(rs.getString("metodo_pago"));
                 venta.setTotalVenta(rs.getDouble("total_venta"));
+                venta.setEstado(rs.getString("estado"));
                 
                 ventas.add(venta);
             }

@@ -116,4 +116,13 @@ public class Venta {
     public void setTotalVenta(double totalVenta) {
         this.totalVenta = totalVenta;
     }
+    private String estado = "Activa";
+
+public String getEstado() {
+    return estado;
+}
+
+public void setEstado(String estado) {
+    this.estado = estado;
+}
 }

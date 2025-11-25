@@ -96,13 +96,25 @@
                 <input type="hidden" name="totalFinalCuenta" id="total" value="0.00">
             </div>
         </div>
+        <div class="row mb-3">
+    <div class="col-md-4">
+        <label>Método de Pago:</label>
+        <select class="form-control" id="metodoPago">
+            <option value="">-- Seleccionar --</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Tarjeta Débito">Tarjeta Débito</option>
+            <option value="Tarjeta Crédito">Tarjeta Crédito</option>
+        </select>
+    </div>
+</div>
 
-        <button type="submit" class="btn btn-success btn-lg w-100 mt-4">FINALIZAR VENTA</button>
+        <button type="button" class="btn btn-success btn-lg w-100 mt-4" onclick="finalizarVentaAjax()">FINALIZAR VENTA</button>
     </form>
 </div>
 
 <script>
     let productoSeleccionado = null;
+    let productosAgregados = []; // GUARDAR PRODUCTOS AQUÍ
 
     function buscarCliente() {
         let cedula = document.getElementById("txtCedulaCliente").value.trim();
@@ -195,6 +207,14 @@
             return; 
         }
 
+        // GUARDAR EN ARRAY GLOBAL
+        console.log("Agregando producto - ID: " + productoSeleccionado.id + ", Cantidad: " + cant);
+        productosAgregados.push({
+            id: productoSeleccionado.id,
+            cantidad: cant
+        });
+        console.log("Productos en array: ", productosAgregados);
+
         let totalLinea = cant * productoSeleccionado.precioFinal;
         
         let fila = "<tr>";
@@ -230,9 +250,101 @@
     }
 
     function eliminarFila(btn) {
-        btn.closest('tr').remove();
+        let fila = btn.closest('tr');
+        let index = Array.from(fila.parentNode.children).indexOf(fila);
+        
+        console.log("Eliminando producto en índice: " + index);
+        productosAgregados.splice(index, 1);
+        console.log("Productos después de eliminar: ", productosAgregados);
+        
+        fila.remove();
         calcularTotales();
     }
+
+    function finalizarVentaAjax() {
+        console.log("=== FINALIZANDO VENTA ===");
+        
+        // Obtener valores
+        let cedula = document.getElementById("txtCedulaCliente").value.trim();
+        let nombre = document.getElementById("txtNombreCliente").value.trim();
+        let total = document.getElementById("total").value;
+        let metodoPago = document.getElementById("metodoPago") ? document.getElementById("metodoPago").value : "Efectivo";
+        
+        console.log("Cedula: " + cedula);
+        console.log("Nombre: " + nombre);
+        console.log("Total: " + total);
+        console.log("Método Pago: " + metodoPago);
+        console.log("Productos: ", productosAgregados);
+        
+        // Validaciones
+        if (!cedula) {
+            alert("Seleccione un cliente");
+            return;
+        }
+        
+        if (productosAgregados.length === 0) {
+            alert("Agregue al menos un producto");
+            return;
+        }
+        
+        if (!metodoPago) {
+            alert("Seleccione método de pago");
+            return;
+        }
+
+        // Preparar datos con URLSearchParams en lugar de FormData
+        let params = new URLSearchParams();
+        params.append("accion", "registrarVenta");
+        params.append("cedulaCliente", cedula);
+        params.append("nombreCliente", nombre);
+        params.append("metodoPago", metodoPago);
+        params.append("totalVenta", total);
+        params.append("productos", JSON.stringify(productosAgregados));
+
+        console.log("Enviando datos al servidor...");
+        console.log("Parámetros: " + params.toString());
+
+        // Enviar al servidor
+        fetch('VentaServlet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: params.toString()
+        })
+        .then(response => {
+            console.log("Status: " + response.status);
+            return response.text();
+        })
+        .then(text => {
+            console.log("Respuesta del servidor (texto): " + text);
+            try {
+                let resultado = JSON.parse(text);
+                console.log("Resultado JSON:", resultado);
+                
+                if (resultado.exito) {
+                    alert("✅ Venta registrada correctamente\nFactura: " + resultado.factura);
+                    location.reload();
+                } else {
+                    alert("❌ Error: " + resultado.mensaje);
+                }
+            } catch(e) {
+                console.error("Error parseando JSON:", e);
+                alert("Error: Respuesta inválida del servidor");
+            }
+        })
+        .catch(error => {
+            console.error("Error en fetch:", error);
+            alert("Error al procesar la venta: " + error.message);
+        });
+    }
+
+    document.getElementById("txtCodigo").addEventListener('keypress', function(e) {
+        if(e.key === 'Enter') {
+            buscarProducto();
+            e.preventDefault();
+        }
+    });
 </script>
 </body>
 </html>

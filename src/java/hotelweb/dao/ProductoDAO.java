@@ -164,4 +164,34 @@ public class ProductoDAO {
     
     return producto;
  }
+    // Agrégale este método a tu ProductoDAO.java
+
+public void actualizarStock(int idProducto, int cantidadVendida) {
+    String sql = "UPDATE productos SET existencia = existencia - ? WHERE id_producto = ?";
+    
+    Connection con = null;
+    PreparedStatement ps = null;
+
+    try {
+        con = ConexionBD.getConnection();
+        ps = con.prepareStatement(sql);
+        
+        ps.setInt(1, cantidadVendida);
+        ps.setInt(2, idProducto);
+
+        ps.executeUpdate();
+        System.out.println("Stock actualizado - Producto: " + idProducto + ", Cantidad: " + cantidadVendida);
+        
+    } catch (SQLException e) {
+        System.err.println("Error actualizando stock: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        try {
+            if (ps != null) ps.close();
+            if (con != null) con.close();
+        } catch (SQLException ex) {
+            System.err.println("Error al cerrar: " + ex.getMessage());
+        }
+    }
+ }
 }

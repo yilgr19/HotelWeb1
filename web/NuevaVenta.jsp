@@ -108,7 +108,8 @@
     </div>
 </div>
 
-        <button type="button" class="btn btn-success btn-lg w-100 mt-4" onclick="finalizarVentaAjax()">FINALIZAR VENTA</button>
+        <button type="button" class="btn btn-success btn-lg w-100 mt-4" onclick="finalizarVentaAjax()">Finalizar Venta</button>
+        <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary mt-2 btn-custom-width" style="width: 100%">Regresar</button>
     </form>
 </div>
 

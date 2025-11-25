@@ -63,8 +63,8 @@
                 <div class="row mb-4 border-bottom border-secondary pb-3">
                     <div class="col-md-6 offset-md-3">
                         <div class="input-group">
-                            <input type="text" class="form-control border-warning" name="cedula" value="<%= cedulaVal %>" placeholder="Ingrese Cédula de Reserva">
-                            <button class="btn btn-warning" type="submit" name="accion" value="buscar_reserva">Buscar Reserva</button>
+                            <input type="text" class="form-control border-success" name="cedula" value="<%= cedulaVal %>" placeholder="Ingrese Cédula de Reserva">
+                            <button class="btn btn-success" type="submit" name="accion" value="buscar_reserva">Buscar Reserva</button>
                         </div>
                         <small class="text-muted">Busque para autocompletar datos y calcular costos.</small>
                     </div>
@@ -146,8 +146,8 @@
                         </div>
 
                         <div class="d-grid gap-2 mt-4">
-                            <button type="submit" name="accion" value="guardar_checkin" class="btn btn-primary btn-lg">REGISTRAR CHECK-IN</button>
-                            <a href="Menu.jsp" class="btn btn-secondary">Regresar al Menú</a>
+                            <button type="submit" name="accion" value="guardar_checkin" class="btn btn-primary btn-lg">Registrar Check-in</button>
+                            <a href="Menu.jsp" class="btn btn-info">Regresar al Menú</a>
                         </div>
                     </div>
                 </div>

@@ -161,11 +161,11 @@
                             
                             <button type="submit" name="accion" value="guardar" class="btn btn-primary btn-custom-width">Guardar</button>
                             
-                            <button type="submit" name="accion" value="eliminar" class="btn btn-secondary btn-custom-width" formnovalidate>Eliminar</button>
+                            <button type="submit" name="accion" value="eliminar" class="btn btn-danger btn-custom-width" formnovalidate>Eliminar</button>
                             <button type="submit" name="accion" value="buscar" class="btn btn-secondary btn-custom-width" formnovalidate>Buscar</button>
                             
-                            <button type="button" onclick="window.location.href='NuevoCliente.jsp';" class="btn btn-secondary btn-custom-width">Nuevo</button>
-                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary btn-custom-width">Regresar</button>
+                            <button type="button" onclick="window.location.href='NuevoCliente.jsp';" class="btn btn-light btn-custom-width">Nuevo</button>
+                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-info btn-custom-width ">Regresar</button>
                         </div>
                     </div>
                 </div>
@@ -174,5 +174,6 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
 </body>
 </html>

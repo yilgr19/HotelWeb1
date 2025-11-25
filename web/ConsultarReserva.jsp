@@ -32,8 +32,8 @@
         <h2 class="text-center mb-4">Listado de Reservas</h2>
         
         <div class="mb-3">
-             <a href="Menu.jsp" class="btn btn-secondary">Regresar al Menú</a>
-             <a href="NuevaReserva.jsp" class="btn btn-primary">Nueva Reserva</a>
+             <a href="Menu.jsp" class="btn btn-info">Regresar al Menú</a>
+             <a href="NuevaReserva.jsp" class="btn btn-light">Nueva Reserva</a>
         </div>
 
         <div class="table-responsive">
@@ -79,7 +79,7 @@
                             <td>
                                 <form action="ReservaServlet" method="post" style="display:inline;">
                                     <input type="hidden" name="cedula" value="<%= r.getCedulaCliente() %>">
-                                    <button type="submit" name="accion" value="Buscar" class="btn btn-sm btn-dark">Gestionar</button>
+                                    <button type="submit" name="accion" value="Buscar" class="btn btn-success">Gestionar</button>
                                 </form>
                             </td>
                         </tr>

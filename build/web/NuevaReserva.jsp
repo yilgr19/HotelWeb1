@@ -177,11 +177,11 @@
                         <div class="botones-crud mt-4"> 
                             <button type="submit" name="accion" value="Reservar" class="btn btn-reservar">Reservar</button>
                             <div class="d-flex gap-2">
-                                <button type="submit" name="accion" value="Buscar" class="btn btn-info flex-fill text-white" formnovalidate>Buscar</button>
+                                <button type="submit" name="accion" value="Buscar" class="btn btn-secondary flex-fill text-white" formnovalidate>Buscar</button>
                                 <button type="submit" name="accion" value="Eliminar" class="btn btn-danger flex-fill" onclick="return confirm('¿Seguro que desea eliminar esta reserva?');" formnovalidate>Eliminar</button>
                             </div>
-                            <a href="NuevaReserva.jsp" class="btn btn-secondary mt-2 text-decoration-none text-center">Limpiar</a>
-                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary mt-2 btn-custom-width" style="width: 100%">Regresar</button>
+                            <a href="NuevaReserva.jsp" class="btn btn-light mt-2 text-decoration-none text-center">Nuevo</a>
+                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-info mt-2 btn-custom-width" style="width: 100%">Regresar</button>
                         </div>
                     </div>
                 </div>

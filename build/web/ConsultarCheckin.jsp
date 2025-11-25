@@ -40,9 +40,9 @@
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-6 d-flex gap-2">
-                    <a href="Menu.jsp" class="btn btn-secondary">Regresar al Menú</a>
-                    <a href="NuevoCheckin.jsp" class="btn btn-primary">Nuevo Check-in</a>
-                    <a href="ConsultarCheckinServlet" class="btn btn-info text-white">Actualizar Tabla</a>
+                    <a href="Menu.jsp" class="btn btn-info">Regresar al Menú</a>
+                    <a href="NuevoCheckin.jsp" class="btn btn-light">Nuevo Check-in</a>
+                    <a href="ConsultarCheckinServlet" class="btn btn-secondary text-white">Actualizar Tabla</a>
                 </div>
             </div>
 

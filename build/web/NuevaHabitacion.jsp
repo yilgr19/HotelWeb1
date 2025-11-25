@@ -115,11 +115,11 @@
                     <div class="col-lg-4 botones-col">
                         <div class="d-grid gap-2 mx-auto" style="width: 100%;"> 
                             <button type="submit" name="accion" value="guardar" class="btn btn-primary">Guardar</button>
-                            <button type="submit" name="accion" value="buscar" class="btn btn-info text-white" formnovalidate>Buscar</button>
+                            <button type="submit" name="accion" value="buscar" class="btn btn-secondary text-white" formnovalidate>Buscar</button>
                             <button type="submit" name="accion" value="eliminar" class="btn btn-danger" onclick="return confirm('¿Eliminar habitación?');" formnovalidate>Eliminar</button>
                             
-                            <a href="NuevaHabitacion.jsp" class="btn btn-secondary">Limpiar</a>
-                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-secondary">Regresar</button>
+                            <a href="NuevaHabitacion.jsp" class="btn btn-light">Nuevo</a>
+                            <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-info">Regresar</button>
                         </div>
                     </div>
                 </div>

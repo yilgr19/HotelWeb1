@@ -1,31 +1,19 @@
 <%@ page import="hotelweb.models.Usuario" %>
 <%@ page import="hotelweb.dao.UsuarioManager" %>
 <%
-    // 1. OBTENER EL USUARIO DE LA SESIÓN
     Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
 
-    // 2. SI NO HAY SESIÓN, ¡AFUERA!
-    // (Redirige al login)
     if (usuarioLogueado == null) {
         response.sendRedirect("index.jsp?error=sesion_expirada");
         return;
     }
 
-    // 3. OBTENER EL NOMBRE DE ESTA PÁGINA
     String paginaActual = request.getRequestURI().substring(request.getContextPath().length() + 1);
 
-    // 4. VERIFICAR PERMISO CON EL MANAGER
     if (!UsuarioManager.tieneAccesoPagina(usuarioLogueado, paginaActual)) {
-        
-        // ¡ACCESO DENEGADO!
-        // Redirigimos al usuario a su menú (o una página de error)
-        // (Asumiendo que "Menu.jsp" es seguro para todos)
         response.sendRedirect("Menu.jsp?error=acceso_denegado");
         return;
     }
-
-    // Si el código llega hasta aquí, el usuario TIENE PERMISO.
-    // La página .jsp se cargará normalmente.
 %>
 
 <!DOCTYPE html>
@@ -34,83 +22,346 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión Hotelera - Inicio</title>
-    <!-- Enlace a Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Estilos generales para el modo oscuro */
         body {
-            background-color: #343a40; /* Gris oscuro de fondo */
-            color: #f8f9fa; /* Color de texto blanco/claro */
+            background-color: #343a40;
+            color: #f8f9fa;
         }
         
-        /* Estilo para hacer la Navbar más grande */
-.navbar-nav .nav-link,
-.navbar-brand {
-    /* Aumenta el padding vertical de los enlaces. Por defecto es ~0.5rem (8px). 
-       Aumentaremos a 1rem (16px) o 1.25rem (20px) para que sea notablemente más alto. */
-    padding-top: 1.00rem !important;
-    padding-bottom: 1.50rem !important;
-    /* !important asegura que sobrescriba el estilo de Bootstrap */
-}
+        .navbar-nav .nav-link,
+        .navbar-brand {
+            padding-top: 1.00rem !important;
+            padding-bottom: 1.50rem !important;
+        }
 
-        /* Estilos de Navbar y Dropdown para modo oscuro */
         .navbar {
             box-shadow: 0 2px 5px rgba(0,0,0,.5);
         }
+        
         .dropdown-menu {
-            background-color: #343a40; /* Fondo del menú desplegable más oscuro */
+            background-color: #343a40;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        
         .dropdown-item {
-            color: #f8f9fa; /* Texto claro en el menú */
-        }
-        .dropdown-item:hover {
-            background-color: #0d6efd; /* Azul primario de Bootstrap en hover */
-            color: #ffffff;
-        }
-        .dropdown-divider {
-            border-top: 1px solid rgba(255, 255, 255, 0.15); /* Separador sutil */
-        }
-
-        /* Estilo del Carrusel */
-        .carrusel-container {
-            padding: 20px;
-            /* Calcula la altura total de la vista menos la altura de la navbar para centrar bien */
-            min-height: calc(100vh - 56px); 
-            display: flex;
-            align-items: center; /* Centrar verticalmente */
-            justify-content: center; /* Centrar horizontalmente */
-            background-color: #343a40; 
+            color: #f8f9fa;
         }
         
-        .carrusel-bordeado {
-            max-width: 1000px; /* Ancho máximo para el carrusel en escritorio */
-            box-shadow: 0 0 20px rgba(0, 123, 255, 0.5); /* Sombra azul para destacar en dark mode */
-            border: 3px solid #0d6efd; /* Borde de color primario */
+        .dropdown-item:hover {
+            background-color: #0d6efd;
+            color: #ffffff;
+        }
+        
+        .dropdown-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* ESTILOS DEL CARRUSEL DE TARJETAS */
+        .carrusel-container {
+            padding: 40px 20px;
+            min-height: calc(100vh - 100px);
+            background: linear-gradient(135deg, #343a40 0%, #1f2329 100%);
+            position: relative;
             overflow: hidden;
         }
 
-        .carousel-item img {
-            height: 500px; 
-            object-fit: cover; 
+        /* Patrón de fondo sutil */
+        .carrusel-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(13, 110, 253, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(13, 202, 240, 0.05) 0%, transparent 50%);
+            pointer-events: none;
         }
 
-        .carousel-caption {
-            background: rgba(0, 0, 0, 0.6); 
-            border-radius: 10px;
-            padding: 10px;
+        .tarjetas-carrusel {
+            display: flex;
+            gap: 25px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 20px 5px;
+            scrollbar-width: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tarjetas-carrusel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tarjeta {
+            flex: 0 0 320px;
+            height: 240px;
+            background: linear-gradient(135deg, #495057 0%, #212529 100%);
+            border: 2px solid #0d6efd;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            text-decoration: none;
+            color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efecto de brillo en hover */
+        .tarjeta::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            transition: all 0.6s;
+        }
+
+        .tarjeta:hover::before {
+            left: 100%;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(13, 110, 253, 0.5);
+            border-color: #0dcaf0;
+            background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+        }
+
+        /* Contenedor de icono con imagen de fondo */
+        .tarjeta-icono {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(13, 110, 253, 0.2);
+            border-radius: 50%;
+            transition: all 0.4s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tarjeta:hover .tarjeta-icono {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotateY(360deg);
+        }
+
+        .tarjeta-icono i {
+            font-size: 40px;
+            color: #0dcaf0;
+            transition: all 0.4s;
+        }
+
+        .tarjeta:hover .tarjeta-icono i {
+            color: #ffffff;
+            transform: scale(1.2);
+        }
+
+        .tarjeta-titulo {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #f8f9fa;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tarjeta-descripcion {
+            font-size: 14px;
+            color: #adb5bd;
+            position: relative;
+            z-index: 2;
+            line-height: 1.5;
+        }
+
+        .tarjeta:hover .tarjeta-descripcion {
+            color: #f8f9fa;
+        }
+
+        /* Botones de scroll mejorados */
+        .btn-scroll {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+            border: none;
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 22px;
+            z-index: 10;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-scroll:hover {
+            background: linear-gradient(135deg, #0dcaf0, #0d6efd);
+            transform: translateY(-50%) scale(1.15);
+            box-shadow: 0 8px 25px rgba(13, 202, 240, 0.6);
+        }
+
+        .btn-scroll:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .btn-scroll-izq {
+            left: 15px;
+        }
+
+        .btn-scroll-der {
+            right: 15px;
+        }
+
+        .carrusel-wrapper {
+            position: relative;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .titulo-seccion {
+            text-align: center;
+            font-size: 38px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitulo-seccion {
+            text-align: center;
+            font-size: 16px;
+            color: #adb5bd;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Badge de usuario */
+        .usuario-badge {
+            background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(13, 110, 253, 0.3);
+        }
+
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tarjeta {
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .tarjeta:nth-child(1) { animation-delay: 0.1s; }
+        .tarjeta:nth-child(2) { animation-delay: 0.2s; }
+        .tarjeta:nth-child(3) { animation-delay: 0.3s; }
+        .tarjeta:nth-child(4) { animation-delay: 0.4s; }
+        .tarjeta:nth-child(5) { animation-delay: 0.5s; }
+        .tarjeta:nth-child(6) { animation-delay: 0.6s; }
+        .tarjeta:nth-child(7) { animation-delay: 0.7s; }
+        .tarjeta:nth-child(8) { animation-delay: 0.8s; }
+
+        /* Marca de agua */
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            background: rgba(13, 110, 253, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 13px;
+            color: #adb5bd;
+            border: 1px solid rgba(13, 110, 253, 0.3);
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .watermark:hover {
+            background: rgba(13, 110, 253, 0.2);
+            color: #0dcaf0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
+        }
+
+        .watermark i {
+            color: #0d6efd;
+            margin-right: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .titulo-seccion {
+                font-size: 28px;
+            }
+            
+            .tarjeta {
+                flex: 0 0 280px;
+                height: 220px;
+            }
+            
+            .btn-scroll {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+
+            .watermark {
+                bottom: 15px;
+                right: 15px;
+                font-size: 11px;
+                padding: 10px 18px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- BARRA DE NAVEGACIÓN (NAVBAR) - COMPLETA Y DARK MODE -->
+    <!-- BARRA DE NAVEGACIÓN -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <!-- Título de la Aplicación -->
-            <a class="navbar-brand text-white fw-bold" >GESTIÓN HOTEL</a>
+            <a class="navbar-brand text-white fw-bold">
+                <i class="fas fa-hotel me-2 text-primary"></i>GESTIÓN HOTEL
+            </a>
             
-            <!-- Botón de Menú Móvil (Toggler) -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -118,24 +369,20 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     
-                    <!-- Dropdown Archivo (Dashboard y Cerrar Sesión) -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdownArchivo" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-current="page">
                             Archivo
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownArchivo">
-                          <li><a class="dropdown-item text-danger" href="LogoutServlet">Cerrar Sesión</a></li>
+                          <li><a class="dropdown-item text-danger" href="LogoutServlet"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            
                         </ul>
                     </li>
                     
-                    <!-- Cliente -->
                     <li class="nav-item">
                         <a class="nav-link text-white" href="NuevoCliente.jsp">Cliente</a>
                     </li>
 
-                    <!-- Dropdown Reservas -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownReservas" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Reservas
@@ -146,7 +393,6 @@
                         </ul>
                     </li>
                     
-                    <!-- Dropdown Check-in/out -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownCheckin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Check-in/out
@@ -157,95 +403,175 @@
                         </ul>
                     </li>
 
-                    <!-- Habitación -->
                     <li class="nav-item">
                         <a class="nav-link text-white" href="NuevaHabitacion.jsp">Habitación</a>
                     </li>
                     
-                    <!-- Dropdown Productos (Registro, Ventas y Consultas) -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownProductos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Productos
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownProductos">
-                            <!-- Nueva opción agregada -->
                             <li><a class="dropdown-item" href="RegistrarProductos.jsp">Registrar Producto</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="NuevaVenta.jsp">Ventas</a></li>
                             <li><a class="dropdown-item" href="ConsultarVentas.jsp">Consultar Ventas</a></li>
                         </ul>
                     </li>
-                    <!-- Fin Dropdown Productos -->
 
                     <li class="nav-item">
                         <a class="nav-link text-danger" href="#">Reportes</a>
                     </li>
                 </ul>
+                
+                <!-- Badge de usuario -->
+                <div class="usuario-badge">
+                    <i class="fas fa-user-circle me-2"></i>
+                    <%= usuarioLogueado.getNombreCompleto() %>
+                </div>
             </div>
         </div>
     </nav>
     
-    <!-- CONTENEDOR DEL CARRUSEL CENTRADO -->
-    <div class="container carrusel-container">
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="carrusel-container">
+        <div class="titulo-seccion text-primary">
+            <i class="fas fa-star me-3"></i>Bienvenido al Sistema de Gestión<i class="fas fa-star ms-3"></i>
+        </div>
+        <div class="subtitulo-seccion">
+            Selecciona una opción para comenzar
+        </div>
 
-        <div id="carouselExampleIndicators" class="carousel slide w-100 rounded-3 " data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
-            </div>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <!-- Placeholder de imagen: Habitación de Lujo -->
-                    <img src="https://th.bing.com/th/id/R.513342188ae2816a96d12ec15dcbeb77?rik=hCIsyf8NRGcB4A&pid=ImgRaw&r=0" class="d-block w-100" alt="Habitación 1">
-                    <div class="carousel-caption d-none d-md-block">
-                        <a href="NuevaHabitacion.jsp" class="text-white text-decoration-none">
-                        <h5 class="fw-bold">Habitaciones de Lujo</h5>
-                        <p>Las mejores comodidades para su estancia.</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    
-                    <img src="https://ateliercdn.azureedge.net/site-atelier/atelierpm/production/images/inspiraSuites/jpg/R1900/INSPIRAJuniorSuiteSwimOutOceanViewDouble/atelier-playa-mujeres-Inspira-Junior-Suite-Swim-Out-Ocean-Double-3-2.jpg?130" class="d-block w-100" alt="Piscina">
-                    <div class="carousel-caption d-none d-md-block">
-                        <a href="NuevaVenta.jsp" class="text-white text-decoration-none">
-                        <h5 class="fw-bold">Servicio de Minibar y Consumos</h5>
-                        <p>Disfruta tu Antojo.</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-             
-                    <img src="https://dexauc1l0pcnj.cloudfront.net/Content/images/blog/how-can-you-reduce-no-shows-and-cancellations-at-your-hotel.jpg" class="d-block w-100" alt="Minibar">
-                    <div class="carousel-caption d-none d-md-block">
-                        <a href="NuevoCliente.jsp" class="text-white text-decoration-none">
-                        <h5 class="fw-bold">Vive la Mejor Experiencia</h5>
-                        <p>Atención Garantizada.</p>
-                    </div>
-                </div>
-                 <div class="carousel-item">
-             
-                    <img src="https://images.surferseo.art/d6ad37e8-7993-4d59-943a-d96fdf06f85c.png" class="d-block w-100" alt="Reserva">
-                    <div class="carousel-caption d-none d-md-block">
-                        <a href="NuevaReserva.jsp" class="text-white text-decoration-none">
-                        <h5 class="fw-bold">Haz tu reserva</h5>
-                        <p>Atención Garantizada.</p>
-                    </div>
-            </div>
-            <!-- Controles Prev/Next -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
+        <div class="carrusel-wrapper">
+            <!-- Botón Izquierdo -->
+            <button class="btn-scroll btn-scroll-izq" onclick="scrollIzquierda()">
+                <i class="fas fa-chevron-left"></i>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
+
+            <!-- Carrusel de Tarjetas -->
+            <div class="tarjetas-carrusel" id="carruselTarjetas">
+                
+                <!-- Tarjeta Habitaciones -->
+                <a href="NuevaHabitacion.jsp" class="tarjeta">
+                    <div class="tarjeta-icono">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                    <div class="tarjeta-titulo">Habitaciones</div>
+                    <div class="tarjeta-descripcion">Gestiona y administra habitaciones de lujo para tus huéspedes</div>
+                </a>
+
+                <!-- Tarjeta Ventas -->
+                <a href="NuevaVenta.jsp" class="tarjeta">
+                    <div class="tarjeta-icono">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+                    <div class="tarjeta-titulo">Nueva Venta</div>
+                    <div class="tarjeta-descripcion">Registra ventas de productos y servicios del hotel</div>
+                </a>
+
+                <!-- Tarjeta Consultar Ventas -->
+                <a href="ConsultarVentas.jsp" class="tarjeta">
+                    <div class="tarjeta-icono">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="tarjeta-titulo">Consultar Ventas</div>
+                    <div class="tarjeta-descripcion">Visualiza y analiza todas las ventas realizadas</div>
+                </a>
+
+                <!-- Tarjeta Clientes -->
+                <a href="NuevoCliente.jsp" class="tarjeta">
+                    <div class="tarjeta-icono">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="tarjeta-titulo">Clientes</div>
+                    <div class="tarjeta-descripcion">Gestiona información y perfiles de clientes</div>
+                </a>
+
+                <!-- Tarjeta Reservas -->
+                <a href="NuevaReserva.jsp" class="tarjeta">
+                    <div class="tarjeta-icono">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="tarjeta-titulo">Reservas</div>
+                    <div class="tarjeta-descripcion">Crea y administra nuevas reservas de habitaciones</div>
+                </a>
+
+                <!-- Tarjeta Check-in -->
+                <a href="NuevoCheckin.jsp" class="tarjeta">
+                    <div class="tarjeta-icono">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                    <div class="tarjeta-titulo">Check-in</div>
+                    <div class="tarjeta-descripcion">Registra la entrada de huéspedes al hotel</div>
+                </a>
+
+                <!-- Tarjeta Productos -->
+                <a href="RegistrarProductos.jsp" class="tarjeta">
+                    <div class="tarjeta-icono">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="tarjeta-titulo">Productos</div>
+                    <div class="tarjeta-descripcion">Registra y actualiza el inventario de productos</div>
+                </a>
+
+                <!-- Tarjeta Reportes -->
+                <a href="#" class="tarjeta">
+                    <div class="tarjeta-icono">
+                        <i class="fas fa-file-chart-line"></i>
+                    </div>
+                    <div class="tarjeta-titulo">Reportes</div>
+                    <div class="tarjeta-descripcion">Visualiza reportes y estadísticas del sistema</div>
+                </a>
+
+            </div>
+
+            <!-- Botón Derecho -->
+            <button class="btn-scroll btn-scroll-der" onclick="scrollDerecha()">
+                <i class="fas fa-chevron-right"></i>
             </button>
         </div>
-        
     </div>
 
-    <!-- Enlace a Bootstrap JS (necesario para el carrusel y los dropdowns) -->
+    <!-- Marca de agua -->
+    <div class="watermark">
+        <i class="fas fa-code"></i>By Melanny G & Camilo R
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const carrusel = document.getElementById('carruselTarjetas');
+
+        function scrollIzquierda() {
+            carrusel.scrollBy({
+                left: -370,
+                behavior: 'smooth'
+            });
+        }
+
+        function scrollDerecha() {
+            carrusel.scrollBy({
+                left: 370,
+                behavior: 'smooth'
+            });
+        }
+
+        // Scroll con rueda del mouse
+        carrusel.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            carrusel.scrollBy({
+                left: e.deltaY > 0 ? 120 : -120,
+                behavior: 'smooth'
+            });
+        });
+
+        // Auto-scroll suave al inicio
+        window.addEventListener('load', () => {
+            carrusel.scrollTo({
+                left: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
 </body>
 </html>

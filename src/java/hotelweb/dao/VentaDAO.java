@@ -1,5 +1,3 @@
-// Ubicación: hotelweb.dao.VentaDAO
-
 package hotelweb.dao;
 
 import hotelweb.models.Venta;
@@ -222,4 +220,59 @@ public class VentaDAO {
             }
         }
     }
+
+    /**
+     * Obtiene todas las ventas de un cliente específico por su cédula
+     * Retorna un List<Object[]> con los datos de cada venta
+     * [0] = id_venta, [1] = num_factura, [2] = fecha, [3] = cedula_cliente, 
+     * [4] = nombre_cliente, [5] = metodo_pago, [6] = total_venta, 
+     * [7] = subtotal (estimado), [8] = iva_total
+     */
+    public List<Object[]> obtenerVentasPorCliente(String cedulaCliente) {
+    List<Object[]> ventas = new ArrayList<>();
+    String sql = "SELECT id_venta, num_factura, fecha, cedula_cliente, nombre_cliente, metodo_pago, " +
+                 "subtotal, iva_total, total_venta " +
+                 "FROM ventas WHERE cedula_cliente = ? AND estado != 'Anulada' ORDER BY fecha DESC";
+    
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    try {
+        con = ConexionBD.getConnection();
+        ps = con.prepareStatement(sql);
+        ps.setString(1, cedulaCliente);
+        rs = ps.executeQuery();
+
+        while (rs.next()) {
+            int idVenta = rs.getInt("id_venta");
+            String numFactura = rs.getString("num_factura");
+            String fecha = rs.getString("fecha");
+            String cedula = rs.getString("cedula_cliente");
+            String nombre = rs.getString("nombre_cliente");
+            String metodoPago = rs.getString("metodo_pago");
+            double subtotal = rs.getDouble("subtotal");
+            double iva = rs.getDouble("iva_total");
+            double total = rs.getDouble("total_venta");
+            
+            // [0]=id, [1]=factura, [2]=fecha, [3]=cedula, [4]=nombre, [5]=metodo, [6]=total, [7]=subtotal, [8]=iva
+            Object[] venta = {idVenta, numFactura, fecha, cedula, nombre, metodoPago, total, subtotal, iva};
+            ventas.add(venta);
+        }
+        
+    } catch (SQLException e) {
+        System.err.println("Error obteniendo ventas del cliente: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (con != null) con.close();
+        } catch (SQLException ex) {
+            System.err.println("Error al cerrar: " + ex.getMessage());
+        }
+    }
+    
+    return ventas;
+}
 }

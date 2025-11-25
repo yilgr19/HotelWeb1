@@ -312,6 +312,7 @@
         .tarjeta:nth-child(6) { animation-delay: 0.6s; }
         .tarjeta:nth-child(7) { animation-delay: 0.7s; }
         .tarjeta:nth-child(8) { animation-delay: 0.8s; }
+        .tarjeta:nth-child(9) { animation-delay: 0.9s; }
 
         /* Marca de agua */
         .watermark {
@@ -417,9 +418,12 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownCheckin">
                             <li><a class="dropdown-item" href="NuevoCheckin.jsp">Nuevo Check-in</a></li>
-                            <li><a class="dropdown-item" href="ConsultarCheckinServlet">Consultar Check-ins</a></li>
+                            <li><a class="dropdown-item" href="ConsultarCheckinServlet">Facturar</a></li>
                         </ul>
                     </li>
+
+                    <!-- Facturación - Visible para todos -->
+                   
 
                     <!-- Habitación - SOLO ADMINISTRADOR -->
                     <% if (esAdministrador) { %>
@@ -538,6 +542,15 @@
                     </div>
                     <div class="tarjeta-titulo">Check-in</div>
                     <div class="tarjeta-descripcion">Registra la entrada de huéspedes al hotel</div>
+                </a>
+
+                <!-- Tarjeta Facturación - Todos -->
+                <a href="ConsultarCheckinServlet" class="tarjeta">
+                    <div class="tarjeta-icono">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div class="tarjeta-titulo">Facturación</div>
+                    <div class="tarjeta-descripcion">Genera y procesa facturas de cobro para clientes</div>
                 </a>
 
                 <!-- Tarjeta Productos - SOLO ADMINISTRADOR -->

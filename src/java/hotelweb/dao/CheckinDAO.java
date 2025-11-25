@@ -100,7 +100,7 @@ public class CheckinDAO {
         }
     }
 
-    // 3. LISTAR SOLO ACTIVOS (Para Check-out)
+    // 3. LISTAR SOLO ACTIVOS (Para Check-out y Facturación)
     public List<Checkin> listarCheckinsActivos() {
         List<Checkin> lista = new ArrayList<>();
         String sql = "SELECT * FROM checkin WHERE estado_checkin = 'Activo' ORDER BY id_checkin DESC";
@@ -113,12 +113,19 @@ public class CheckinDAO {
                 Checkin c = new Checkin();
                 c.setIdCheckin(rs.getInt("id_checkin"));
                 c.setNumHabitacion(rs.getString("num_habitacion"));
+                c.setTipoHabitacion(rs.getString("tipo_habitacion"));
+                c.setClienteCedula(rs.getString("cliente_cedula"));
                 c.setClienteNombre(rs.getString("cliente_nombre"));
                 c.setClienteApellido(rs.getString("cliente_apellido"));
+                c.setClienteTelefono(rs.getString("cliente_telefono"));
                 c.setFechaEntrada(rs.getString("fecha_entrada"));
                 c.setFechaSalida(rs.getString("fecha_salida"));
                 c.setCostoTotal(rs.getDouble("costo_total"));
                 c.setEstadoPago(rs.getString("estado_pago"));
+                c.setPrecioNoche(rs.getDouble("precio_noche"));
+                c.setHoraEntrada(rs.getString("hora_entrada"));
+                c.setHoraSalida(rs.getString("hora_salida"));
+                c.setTiempoEstadia(rs.getString("tiempo_estadia"));
                 lista.add(c);
             }
         } catch (SQLException e) { e.printStackTrace(); }
@@ -195,5 +202,63 @@ public class CheckinDAO {
             }
         } catch (SQLException e) { e.printStackTrace(); }
         return lista;
+    }
+
+    // =============== NUEVOS MÉTODOS PARA FACTURACIÓN ===============
+
+    /**
+     * Obtiene un check-in específico por su ID (para Facturación)
+     */
+    public Checkin obtenerCheckinPorId(int idCheckin) throws SQLException {
+        String sql = "SELECT * FROM checkin WHERE id_checkin = ?";
+        Checkin checkin = null;
+
+        try (Connection con = ConexionBD.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setInt(1, idCheckin);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    checkin = new Checkin();
+                    checkin.setIdCheckin(rs.getInt("id_checkin"));
+                    checkin.setFechaEntrada(rs.getString("fecha_entrada"));
+                    checkin.setHoraEntrada(rs.getString("hora_entrada"));
+                    checkin.setFechaSalida(rs.getString("fecha_salida"));
+                    checkin.setHoraSalida(rs.getString("hora_salida"));
+                    checkin.setTiempoEstadia(rs.getString("tiempo_estadia"));
+                    checkin.setNumHabitacion(rs.getString("num_habitacion"));
+                    checkin.setTipoHabitacion(rs.getString("tipo_habitacion"));
+                    checkin.setPrecioNoche(rs.getDouble("precio_noche"));
+                    checkin.setCostoTotal(rs.getDouble("costo_total"));
+                    checkin.setEstadoPago(rs.getString("estado_pago"));
+                    checkin.setClienteCedula(rs.getString("cliente_cedula"));
+                    checkin.setClienteNombre(rs.getString("cliente_nombre"));
+                    checkin.setClienteApellido(rs.getString("cliente_apellido"));
+                    checkin.setClienteTelefono(rs.getString("cliente_telefono"));
+                    checkin.setObservaciones(rs.getString("observaciones"));
+                }
+            }
+        }
+        return checkin;
+    }
+
+    /**
+     * Actualiza el estado de pago de un check-in (para Facturación)
+     */
+    public boolean actualizarEstadoPago(int idCheckin, String estadoPago) throws SQLException {
+        String sql = "UPDATE checkin SET estado_pago = ?, estado_checkin = 'Pagado' WHERE id_checkin = ?";
+        
+        try (Connection con = ConexionBD.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, estadoPago);
+            ps.setInt(2, idCheckin);
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar estado de pago: " + e.getMessage());
+            throw e;
+        }
     }
 }

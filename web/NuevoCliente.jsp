@@ -168,6 +168,9 @@
                             <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-info btn-custom-width ">Regresar</button>
                         </div>
                     </div>
+                         <div class="watermark">
+        <i class="fas fa-code"></i>By Melanny G & Camilo R
+    </div>
                 </div>
             </form>
         </div>

@@ -14,6 +14,10 @@
         response.sendRedirect("Menu.jsp?error=acceso_denegado");
         return;
     }
+    
+    // Variables para verificar permisos
+    boolean esAdministrador = usuarioLogueado.getRol().equals("Administrador");
+    boolean esRecepcionista = usuarioLogueado.getRol().equals("Recepcion");
 %>
 
 <!DOCTYPE html>
@@ -273,6 +277,17 @@
             box-shadow: 0 2px 10px rgba(13, 110, 253, 0.3);
         }
 
+        /* Badge de rol */
+        .rol-badge {
+            background: linear-gradient(135deg, #198754, #20c997);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+            box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);
+        }
+
         /* Animación de entrada */
         @keyframes fadeInUp {
             from {
@@ -379,10 +394,12 @@
                         </ul>
                     </li>
                     
+                    <!-- Cliente - Visible para todos -->
                     <li class="nav-item">
                         <a class="nav-link text-white" href="NuevoCliente.jsp">Cliente</a>
                     </li>
 
+                    <!-- Reservas - Visible para todos -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownReservas" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Reservas
@@ -393,6 +410,7 @@
                         </ul>
                     </li>
                     
+                    <!-- Check-in/out - Visible para todos -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownCheckin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Check-in/out
@@ -403,31 +421,46 @@
                         </ul>
                     </li>
 
+                    <!-- Habitación - SOLO ADMINISTRADOR -->
+                    <% if (esAdministrador) { %>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="NuevaHabitacion.jsp">Habitación</a>
                     </li>
+                    <% } %>
                     
+                    <!-- Productos -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownProductos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Productos
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownProductos">
+                            <% if (esAdministrador) { %>
                             <li><a class="dropdown-item" href="RegistrarProductos.jsp">Registrar Producto</a></li>
                             <li><hr class="dropdown-divider"></li>
+                            <% } %>
                             <li><a class="dropdown-item" href="NuevaVenta.jsp">Ventas</a></li>
                             <li><a class="dropdown-item" href="ConsultarVentas.jsp">Consultar Ventas</a></li>
                         </ul>
                     </li>
 
+                    <!-- Reportes - SOLO ADMINISTRADOR -->
+                    <% if (esAdministrador) { %>
                     <li class="nav-item">
-                        <a class="nav-link text-danger" href="#">Reportes</a>
+                        <a class="nav-link text-warning" href="#">Reportes</a>
                     </li>
+                    <% } %>
                 </ul>
                 
-                <!-- Badge de usuario -->
-                <div class="usuario-badge">
-                    <i class="fas fa-user-circle me-2"></i>
-                    <%= usuarioLogueado.getNombreCompleto() %>
+                <!-- Badge de usuario y rol -->
+                <div class="d-flex align-items-center">
+                    <div class="usuario-badge">
+                        <i class="fas fa-user-circle me-2"></i>
+                        <%= usuarioLogueado.getNombreCompleto() %>
+                    </div>
+                    <div class="rol-badge">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        <%= usuarioLogueado.getRol() %>
+                    </div>
                 </div>
             </div>
         </div>
@@ -435,11 +468,11 @@
     
     <!-- CONTENEDOR PRINCIPAL -->
     <div class="carrusel-container">
-        <div class="titulo-seccion text-primary">
+        <div class="titulo-seccion">
             <i class="fas fa-star me-3"></i>Bienvenido al Sistema de Gestión<i class="fas fa-star ms-3"></i>
         </div>
         <div class="subtitulo-seccion">
-            Selecciona una opción para comenzar
+            Selecciona una opción para comenzar - Rol: <%= usuarioLogueado.getRol() %>
         </div>
 
         <div class="carrusel-wrapper">
@@ -451,7 +484,8 @@
             <!-- Carrusel de Tarjetas -->
             <div class="tarjetas-carrusel" id="carruselTarjetas">
                 
-                <!-- Tarjeta Habitaciones -->
+                <!-- Tarjeta Habitaciones - SOLO ADMINISTRADOR -->
+                <% if (esAdministrador) { %>
                 <a href="NuevaHabitacion.jsp" class="tarjeta">
                     <div class="tarjeta-icono">
                         <i class="fas fa-bed"></i>
@@ -459,8 +493,9 @@
                     <div class="tarjeta-titulo">Habitaciones</div>
                     <div class="tarjeta-descripcion">Gestiona y administra habitaciones de lujo para tus huéspedes</div>
                 </a>
+                <% } %>
 
-                <!-- Tarjeta Ventas -->
+                <!-- Tarjeta Ventas - Todos -->
                 <a href="NuevaVenta.jsp" class="tarjeta">
                     <div class="tarjeta-icono">
                         <i class="fas fa-cash-register"></i>
@@ -469,7 +504,7 @@
                     <div class="tarjeta-descripcion">Registra ventas de productos y servicios del hotel</div>
                 </a>
 
-                <!-- Tarjeta Consultar Ventas -->
+                <!-- Tarjeta Consultar Ventas - Todos -->
                 <a href="ConsultarVentas.jsp" class="tarjeta">
                     <div class="tarjeta-icono">
                         <i class="fas fa-chart-line"></i>
@@ -478,7 +513,7 @@
                     <div class="tarjeta-descripcion">Visualiza y analiza todas las ventas realizadas</div>
                 </a>
 
-                <!-- Tarjeta Clientes -->
+                <!-- Tarjeta Clientes - Todos -->
                 <a href="NuevoCliente.jsp" class="tarjeta">
                     <div class="tarjeta-icono">
                         <i class="fas fa-users"></i>
@@ -487,7 +522,7 @@
                     <div class="tarjeta-descripcion">Gestiona información y perfiles de clientes</div>
                 </a>
 
-                <!-- Tarjeta Reservas -->
+                <!-- Tarjeta Reservas - Todos -->
                 <a href="NuevaReserva.jsp" class="tarjeta">
                     <div class="tarjeta-icono">
                         <i class="fas fa-calendar-check"></i>
@@ -496,7 +531,7 @@
                     <div class="tarjeta-descripcion">Crea y administra nuevas reservas de habitaciones</div>
                 </a>
 
-                <!-- Tarjeta Check-in -->
+                <!-- Tarjeta Check-in - Todos -->
                 <a href="NuevoCheckin.jsp" class="tarjeta">
                     <div class="tarjeta-icono">
                         <i class="fas fa-door-open"></i>
@@ -505,7 +540,8 @@
                     <div class="tarjeta-descripcion">Registra la entrada de huéspedes al hotel</div>
                 </a>
 
-                <!-- Tarjeta Productos -->
+                <!-- Tarjeta Productos - SOLO ADMINISTRADOR -->
+                <% if (esAdministrador) { %>
                 <a href="RegistrarProductos.jsp" class="tarjeta">
                     <div class="tarjeta-icono">
                         <i class="fas fa-box"></i>
@@ -513,8 +549,10 @@
                     <div class="tarjeta-titulo">Productos</div>
                     <div class="tarjeta-descripcion">Registra y actualiza el inventario de productos</div>
                 </a>
+                <% } %>
 
-                <!-- Tarjeta Reportes -->
+                <!-- Tarjeta Reportes - SOLO ADMINISTRADOR -->
+                <% if (esAdministrador) { %>
                 <a href="#" class="tarjeta">
                     <div class="tarjeta-icono">
                         <i class="fas fa-file-chart-line"></i>
@@ -522,6 +560,7 @@
                     <div class="tarjeta-titulo">Reportes</div>
                     <div class="tarjeta-descripcion">Visualiza reportes y estadísticas del sistema</div>
                 </a>
+                <% } %>
 
             </div>
 

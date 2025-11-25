@@ -150,6 +150,9 @@
                             <a href="Menu.jsp" class="btn btn-info">Regresar al Menú</a>
                         </div>
                     </div>
+                        <div class="watermark">
+        <i class="fas fa-code"></i>By Melanny G & Camilo R
+    </div>
                 </div>
             </form>
         </div>

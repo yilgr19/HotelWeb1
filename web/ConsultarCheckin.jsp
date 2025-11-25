@@ -120,10 +120,12 @@
                 </table>
             </div>
         </div>
+                    
         <div class="card-footer text-end text-muted py-2 bg-black rounded-bottom-3">
             <small>Gestión Hotelera</small>
         </div>
     </div>
+                    
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

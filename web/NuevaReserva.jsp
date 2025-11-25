@@ -157,8 +157,8 @@
                         <h4 class="text-white border-bottom border-secondary pb-2 mb-3">Datos del Huésped</h4>
                         
                         <div class="mb-3">
-                            <label class="form-label fw-bold text-warning">Cédula:</label>
-                            <input type="text" class="form-control border-warning" name="cedula" value="<%= cedulaVal %>" required placeholder="Ingrese Cédula y presione Buscar">
+                            <label class="form-label fw-bold text-info">Cédula:</label>
+                            <input type="text" class="form-control border-info" name="cedula" value="<%= cedulaVal %>" required placeholder="Ingrese Cédula y presione Buscar">
                         </div>
                         
                         <div class="mb-3">
@@ -184,6 +184,9 @@
                             <button type="button" onclick="window.location.href='Menu.jsp';" class="btn btn-info mt-2 btn-custom-width" style="width: 100%">Regresar</button>
                         </div>
                     </div>
+                         <div class="watermark">
+        <i class="fas fa-code text-muted"></i>By Melanny G & Camilo R
+    </div>
                 </div>
             </form>
         </div>

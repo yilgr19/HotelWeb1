@@ -84,15 +84,15 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
             margin-bottom: 30px;
         }
 
         .stat-card {
             background: white;
-            border-radius: 15px;
-            padding: 25px;
+            border-radius: 12px;
+            padding: 20px;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s, box-shadow 0.3s;
@@ -104,8 +104,8 @@
         }
 
         .stat-card .icon {
-            font-size: 40px;
-            margin-bottom: 15px;
+            font-size: 32px;
+            margin-bottom: 12px;
         }
 
         .stat-card.clientes .icon { color: #0d6efd; }
@@ -117,18 +117,18 @@
         .stat-card.ingresos .icon { color: #198754; }
 
         .stat-card h3 {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: bold;
-            margin: 10px 0;
+            margin: 8px 0;
             color: #333;
         }
 
         .stat-card p {
             color: #666;
             margin: 0;
-            font-size: 14px;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
 
         .report-section {
